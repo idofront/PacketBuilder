@@ -13,11 +13,11 @@ class EthernetHeader : public Stackable
 {
   public:
     EthernetHeader();
-    uint8_t *DestinationMac();
+    uint8_t *DestinationMac() const;
     void DestinationMac(uint8_t *destinationMac);
-    uint8_t *SourceMac();
+    uint8_t *SourceMac() const;
     void SourceMac(uint8_t *sourceMac);
-    uint16_t EthernetType();
+    uint16_t EthernetType() const;
     void EthernetType(uint16_t ethernetType);
 
   private:

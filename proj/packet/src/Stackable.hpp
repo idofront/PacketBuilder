@@ -21,11 +21,11 @@ class Stackable
     static StackablePtr Compose(StackablePtr stackable);
     static std::string HexDump(StackablePtr stackable);
     static StackablePtr Tail(StackablePtr stackable);
+    StackablePtr Stack() const;
 
   protected:
     virtual void OnStacked();
     static std::size_t GetTotalLength(StackablePtr stackable);
-    StackablePtr Stack();
 
   private:
     StackablePtr _Stackable = nullptr;

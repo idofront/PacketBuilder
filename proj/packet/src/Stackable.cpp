@@ -93,7 +93,7 @@ void Stackable::OnStacked()
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
-StackablePtr Stackable::Stack()
+StackablePtr Stackable::Stack() const
 {
     return this->_Stackable;
 }

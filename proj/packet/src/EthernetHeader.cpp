@@ -7,7 +7,7 @@ EthernetHeader::EthernetHeader() : Stackable(HeaderSize)
 {
 }
 
-uint8_t *EthernetHeader::DestinationMac()
+uint8_t *EthernetHeader::DestinationMac() const
 {
     return this->Header()->ether_dhost;
 }
@@ -17,7 +17,7 @@ void EthernetHeader::DestinationMac(uint8_t *destinationMac)
     memcpy(this->Header()->ether_dhost, destinationMac, 6);
 }
 
-uint8_t *EthernetHeader::SourceMac()
+uint8_t *EthernetHeader::SourceMac() const
 {
     return this->Header()->ether_shost;
 }
@@ -27,7 +27,7 @@ void EthernetHeader::SourceMac(uint8_t *sourceMac)
     memcpy(this->Header()->ether_shost, sourceMac, 6);
 }
 
-uint16_t EthernetHeader::EthernetType()
+uint16_t EthernetHeader::EthernetType() const
 {
     return this->Header()->ether_type;
 }
