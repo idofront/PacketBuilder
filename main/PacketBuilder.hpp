@@ -1,7 +1,6 @@
 #ifndef PACKET_BUILDER__PACKET_BUILDER_HPP__
 #define PACKET_BUILDER__PACKET_BUILDER_HPP__
 
-#include <Utility/Utility.hpp>
 #include <algorithm>
 #include <cmdline.h>
 #include <filesystem>

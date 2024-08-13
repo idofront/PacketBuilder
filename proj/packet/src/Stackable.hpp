@@ -2,7 +2,7 @@
 #define PACKET_BUILDER__STACKABLE_HPP__
 
 #include <StackableEntity.hpp>
-#include <Utility/Utility.hpp>
+#include <Utility.hpp>
 
 namespace Packet
 {

@@ -6,7 +6,6 @@
 #include <PcapPacketHeader.hpp>
 #include <Stackable.hpp>
 #include <Udp.hpp>
-#include <Utility/Utility.hpp>
 #include <arpa/inet.h>
 #include <cmdline.h>
 #include <cstring>

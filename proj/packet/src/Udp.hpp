@@ -2,7 +2,6 @@
 #define PACKET_BUILDER__UDP_HPP__
 
 #include <Stackable.hpp>
-#include <Utility/Utility.hpp>
 #include <netinet/udp.h>
 
 namespace Packet

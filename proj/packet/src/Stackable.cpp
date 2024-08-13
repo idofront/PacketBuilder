@@ -1,6 +1,5 @@
 #include <Binary.hpp>
 #include <Stackable.hpp>
-#include <Utility/Utility.hpp>
 #include <Utility.hpp>
 #include <cstring>
 #include <iostream>
@@ -49,7 +48,7 @@ void Stackable::CopyDataArray(StackablePtr stackable, StackablePtr dest, std::si
         return;
     }
 
-    auto typeName = ::Utility::Demangle(typeid(*stackable).name());
+    auto typeName = Utility::Demangle(typeid(*stackable).name());
     auto length = stackable->Length();
     SPDLOG_DEBUG("offset: {:4d}, length: {:4d}/{:4d}, typename: {}", offset, length, offset + length, typeName);
 
