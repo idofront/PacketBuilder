@@ -1,5 +1,5 @@
 #include <Converter.hpp>
-#include <EthernetHeader.hpp>
+#include <Ethernet.hpp>
 #include <Ipv4.hpp>
 #include <JCEthernetHeaderEntity.hpp>
 #include <JCIpv4Entity.hpp>
@@ -7,7 +7,7 @@
 
 std::string ToJson()
 {
-    auto ethernetHeader = std::make_shared<PacketBuilder::EthernetHeader>();
+    auto ethernetHeader = std::make_shared<PacketBuilder::Ethernet>();
     {
         ethernetHeader->DestinationMac((uint8_t *)"\x0A\x0B\x0C\x0D\x0E\x0F");
         ethernetHeader->SourceMac((uint8_t *)"\x01\x02\x03\x04\x05\x06");
@@ -56,7 +56,7 @@ std::string ToJson()
 void FromJson(std::string jsonString)
 {
     auto ethernetHeaderEntity = JsonConverter::EthernetHeaderEntity();
-    auto ethernetHeader = std::make_shared<PacketBuilder::EthernetHeader>();
+    auto ethernetHeader = std::make_shared<PacketBuilder::Ethernet>();
 
     auto ethernetHeaderJson = nlohmann::json::parse(jsonString);
 

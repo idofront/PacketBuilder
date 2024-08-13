@@ -3,16 +3,16 @@
 
 #include <JCEthernetHeaderEntity.hpp>
 #include <JCIpv4Entity.hpp>
-#include <Udp.hpp>
 #include <JCUdpEntity.hpp>
+#include <Udp.hpp>
 #include <nlohmann/json.hpp>
 
 namespace JsonConverter
 {
 void to_json(nlohmann::json &j, const EthernetHeaderEntity &entity);
 void from_json(const nlohmann::json &j, EthernetHeaderEntity &entity);
-void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::EthernetHeader &header);
-void from_entity(const EthernetHeaderEntity &entity, PacketBuilder::EthernetHeader &header);
+void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::Ethernet &header);
+void from_entity(const EthernetHeaderEntity &entity, PacketBuilder::Ethernet &header);
 void EthernetAddressToString(std::string &addr, const uint8_t *const ether_addr);
 void EthernetAddressFromString(const std::string &addr, uint8_t *const ether_addr);
 

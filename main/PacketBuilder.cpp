@@ -1,4 +1,4 @@
-#include <EthernetHeader.hpp>
+#include <Ethernet.hpp>
 #include <Ipv4.hpp>
 #include <PacketBuilder.hpp>
 #include <PcapFileHeader.hpp>
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 
     std::vector<PacketBuilder::StackablePtr> stackables;
 
-    auto ether = PacketBuilder::EthernetHeaderPtr(new PacketBuilder::EthernetHeader());
+    auto ether = PacketBuilder::EthernetPtr(new PacketBuilder::Ethernet());
     auto ipv4 = PacketBuilder::Ipv4Ptr(new PacketBuilder::Ipv4());
     auto udp = PacketBuilder::UdpPtr(new PacketBuilder::Udp());
     auto payload = PacketBuilder::StackablePtr(new PacketBuilder::Stackable(32));

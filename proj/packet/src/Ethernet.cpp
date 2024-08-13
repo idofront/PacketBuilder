@@ -1,43 +1,43 @@
-#include <EthernetHeader.hpp>
+#include <Ethernet.hpp>
 #include <arpa/inet.h>
 
 namespace PacketBuilder
 {
-EthernetHeader::EthernetHeader() : Stackable(HeaderSize)
+Ethernet::Ethernet() : Stackable(HeaderSize)
 {
 }
 
-uint8_t *EthernetHeader::DestinationMac() const
+uint8_t *Ethernet::DestinationMac() const
 {
     return this->Header()->ether_dhost;
 }
 
-void EthernetHeader::DestinationMac(uint8_t *destinationMac)
+void Ethernet::DestinationMac(uint8_t *destinationMac)
 {
     memcpy(this->Header()->ether_dhost, destinationMac, 6);
 }
 
-uint8_t *EthernetHeader::SourceMac() const
+uint8_t *Ethernet::SourceMac() const
 {
     return this->Header()->ether_shost;
 }
 
-void EthernetHeader::SourceMac(uint8_t *sourceMac)
+void Ethernet::SourceMac(uint8_t *sourceMac)
 {
     memcpy(this->Header()->ether_shost, sourceMac, 6);
 }
 
-uint16_t EthernetHeader::EthernetType() const
+uint16_t Ethernet::EthernetType() const
 {
     return this->Header()->ether_type;
 }
 
-void EthernetHeader::EthernetType(uint16_t ethernetType)
+void Ethernet::EthernetType(uint16_t ethernetType)
 {
     this->Header()->ether_type = htons(ethernetType);
 }
 
-struct ether_header *EthernetHeader::Header() const
+struct ether_header *Ethernet::Header() const
 {
     auto data_ptr = this->DataArray().get();
     struct ether_header *header = reinterpret_cast<struct ether_header *>(data_ptr);

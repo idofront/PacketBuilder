@@ -6,13 +6,13 @@
 
 namespace PacketBuilder
 {
-class EthernetHeader;
-using EthernetHeaderPtr = std::shared_ptr<EthernetHeader>;
+class Ethernet;
+using EthernetPtr = std::shared_ptr<Ethernet>;
 
-class EthernetHeader : public Stackable
+class Ethernet : public Stackable
 {
   public:
-    EthernetHeader();
+    Ethernet();
     uint8_t *DestinationMac() const;
     void DestinationMac(uint8_t *destinationMac);
     uint8_t *SourceMac() const;

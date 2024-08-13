@@ -40,7 +40,7 @@ nlohmann::json GetStackEntityJson(const StackableEntity &entity)
 
     nlohmann::json stackEntityJson;
 
-    if (stackType == typeid(PacketBuilder::EthernetHeader).name())
+    if (stackType == typeid(PacketBuilder::Ethernet).name())
     {
         stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<EthernetHeaderEntity>(entity.Stack)));
     }
@@ -93,7 +93,7 @@ void from_json(const nlohmann::json &j, EthernetHeaderEntity &entity)
     }
 }
 
-void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::EthernetHeader &header)
+void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::Ethernet &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     auto destMac = std::string("");
@@ -124,7 +124,7 @@ void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::EthernetHeader
     }
 }
 
-void from_entity(const EthernetHeaderEntity &entity, PacketBuilder::EthernetHeader &header)
+void from_entity(const EthernetHeaderEntity &entity, PacketBuilder::Ethernet &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
@@ -168,7 +168,7 @@ void to_entity(Ipv4Entity &entity, const PacketBuilder::Ipv4 &header)
 StackableEntityPtr CreateStackableEntity(const std::string &type)
 {
     auto map = std::map<std::string, std::function<StackableEntityPtr(void)>>{
-        {typeid(PacketBuilder::EthernetHeader).name(), []() { return std::make_shared<EthernetHeaderEntity>(); }},
+        {typeid(PacketBuilder::Ethernet).name(), []() { return std::make_shared<EthernetHeaderEntity>(); }},
         {typeid(PacketBuilder::Ipv4).name(), []() { return std::make_shared<Ipv4Entity>(); }},
         {typeid(PacketBuilder::Udp).name(), []() { return std::make_shared<UdpEntity>(); }},
         {typeid(PacketBuilder::Stackable).name(), []() { return std::make_shared<StackableEntity>(); }},
@@ -185,7 +185,7 @@ StackableEntityPtr CreateStackableEntity(const std::string &type)
 StackableEntityPtr CreateStackableEntity(const std::string &type, const nlohmann::json &j)
 {
     auto map = std::map<std::string, std::function<StackableEntityPtr()>>{
-        {typeid(PacketBuilder::EthernetHeader).name(),
+        {typeid(PacketBuilder::Ethernet).name(),
          [&j]() {
              auto entity = j.get<EthernetHeaderEntity>();
              auto entityPtr = std::make_shared<EthernetHeaderEntity>(entity);

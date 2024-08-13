@@ -1,7 +1,7 @@
 #ifndef JSON_CONVERTER__ETHERNET_HEADER_ENTITY_HPP__
 #define JSON_CONVERTER__ETHERNET_HEADER_ENTITY_HPP__
 
-#include <EthernetHeader.hpp>
+#include <Ethernet.hpp>
 #include <JCStackableEntity.hpp>
 #include <netinet/ether.h>
 #include <nlohmann/json.hpp>
