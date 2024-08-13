@@ -1,8 +1,9 @@
 #include <PcapPacketHeader.hpp>
+#include <PcapPacketHeaderEntity.hpp>
 
 namespace Packet
 {
-PcapPacketHeader::PcapPacketHeader() : Stackable(HeaderSize)
+PcapPacketHeader::PcapPacketHeader() : Stackable(HeaderSize, std::make_shared<PacketEntity::PcapPacketHeaderEntity>())
 {
 }
 

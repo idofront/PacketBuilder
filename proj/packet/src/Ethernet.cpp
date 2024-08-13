@@ -1,9 +1,10 @@
 #include <Ethernet.hpp>
+#include <EthernetEntity.hpp>
 #include <arpa/inet.h>
 
 namespace Packet
 {
-Ethernet::Ethernet() : Stackable(HeaderSize)
+Ethernet::Ethernet() : Stackable(HeaderSize, std::make_shared<PacketEntity::EthernetEntity>())
 {
 }
 

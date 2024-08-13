@@ -1,10 +1,11 @@
 #include <Udp.hpp>
+#include <UdpEntity.hpp>
 #include <arpa/inet.h>
 
 namespace Packet
 {
 
-Udp::Udp() : Stackable(HeaderSize)
+Udp::Udp() : Stackable(HeaderSize, std::make_shared<PacketEntity::UdpEntity>())
 {
     this->SourcePort(0);
     this->DestinationPort(0);

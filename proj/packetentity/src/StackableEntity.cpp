@@ -16,6 +16,11 @@ std::string StackableEntity::ToString()
     return json.dump();
 }
 
+nlohmann::json StackableEntity::ToJson()
+{
+    throw std::runtime_error("Not implemented");
+}
+
 StackableEntityPtr StackableEntity::Stack()
 {
     return this->_Stack;

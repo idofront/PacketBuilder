@@ -1,9 +1,10 @@
 #include <Ipv4.hpp>
+#include <Ipv4Entity.hpp>
 #include <arpa/inet.h>
 
 namespace Packet
 {
-Ipv4::Ipv4() : Stackable(HeaderSize)
+Ipv4::Ipv4() : Stackable(HeaderSize, std::make_shared<PacketEntity::Ipv4Entity>())
 {
     struct sockaddr_in sourceAddress;
     struct sockaddr_in destinationAddress;
