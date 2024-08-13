@@ -1,3 +1,4 @@
+#include <Binary.hpp>
 #include <Stackable.hpp>
 #include <Utility/Utility.hpp>
 #include <cstring>
@@ -10,6 +11,11 @@ Stackable::Stackable(std::size_t length)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     std::memset(this->_DataArray.get(), 0, this->_Length);
+}
+
+Stackable::~Stackable()
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
 void Stackable::Stack(StackablePtr stackable)
@@ -54,7 +60,7 @@ StackablePtr Stackable::Compose(StackablePtr stackable)
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     auto totalLength = GetTotalLength(stackable);
     SPDLOG_DEBUG("composed data length: {}", totalLength);
-    auto composed = StackablePtr(new Stackable(totalLength));
+    auto composed = BinaryPtr(new Binary(totalLength));
     CopyDataArray(stackable, composed);
 
     return composed;

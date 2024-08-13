@@ -1,3 +1,4 @@
+#include <Binary.hpp>
 #include <Ethernet.hpp>
 #include <Ipv4.hpp>
 #include <PacketBuilder.hpp>
@@ -37,7 +38,7 @@ int main(int argc, char **argv)
     auto ether = Packet::EthernetPtr(new Packet::Ethernet());
     auto ipv4 = Packet::Ipv4Ptr(new Packet::Ipv4());
     auto udp = Packet::UdpPtr(new Packet::Udp());
-    auto payload = Packet::StackablePtr(new Packet::Stackable(32));
+    auto payload = Packet::BinaryPtr(new Packet::Binary(32));
 
     // Ether header
     {

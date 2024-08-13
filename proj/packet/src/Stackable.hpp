@@ -13,7 +13,7 @@ class Stackable
   public:
     Stackable() = delete;
     Stackable(std::size_t length);
-    virtual ~Stackable() = default;
+    virtual ~Stackable() = 0;
     virtual void Stack(StackablePtr stackable) final;
     virtual Utility::DataArrayPtr DataArray() const final;
     std::size_t Length() const;
