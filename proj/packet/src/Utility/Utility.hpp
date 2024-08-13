@@ -19,12 +19,6 @@ using DataArrayPtr = std::shared_ptr<DataArray>;
 /// @param length
 /// @return
 std::string HexDump(DataArrayPtr data, std::size_t length);
-
-/// @brief
-/// @param demangle
-/// @return
-std::string Demangle(const std::string &demangle);
-
 } // namespace Packet::Utility
 
 #endif

@@ -1,13 +1,15 @@
 #include <Binary.hpp>
 #include <Stackable.hpp>
 #include <Utility/Utility.hpp>
+#include <Utility.hpp>
 #include <cstring>
 #include <iostream>
 
 namespace Packet
 {
-Stackable::Stackable(std::size_t length)
-    : _Length(length), _Stackable(nullptr), _DataArray(std::shared_ptr<Utility::DataArray>(new uint8_t[this->_Length]))
+Stackable::Stackable(std::size_t length, PacketEntity::StackableEntityPtr stackableEntity)
+    : _Length(length), _Stackable(nullptr), _DataArray(std::shared_ptr<Utility::DataArray>(new uint8_t[this->_Length])),
+      _StackableEntity(stackableEntity)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     std::memset(this->_DataArray.get(), 0, this->_Length);
@@ -47,7 +49,7 @@ void Stackable::CopyDataArray(StackablePtr stackable, StackablePtr dest, std::si
         return;
     }
 
-    auto typeName = Utility::Demangle(typeid(*stackable).name());
+    auto typeName = ::Utility::Demangle(typeid(*stackable).name());
     auto length = stackable->Length();
     SPDLOG_DEBUG("offset: {:4d}, length: {:4d}/{:4d}, typename: {}", offset, length, offset + length, typeName);
 

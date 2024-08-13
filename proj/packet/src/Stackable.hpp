@@ -1,7 +1,9 @@
 #ifndef PACKET_BUILDER__STACKABLE_HPP__
 #define PACKET_BUILDER__STACKABLE_HPP__
 
+#include <StackableEntity.hpp>
 #include <Utility/Utility.hpp>
+
 namespace Packet
 {
 class Stackable;
@@ -12,7 +14,7 @@ class Stackable
 {
   public:
     Stackable() = delete;
-    Stackable(std::size_t length);
+    Stackable(std::size_t length, PacketEntity::StackableEntityPtr stackableEntity = nullptr);
     virtual ~Stackable() = 0;
     virtual void Stack(StackablePtr stackable) final;
     virtual Utility::DataArrayPtr DataArray() const final;
@@ -32,6 +34,7 @@ class Stackable
     std::size_t _Length;
     Utility::DataArrayPtr _DataArray;
     static void CopyDataArray(StackablePtr stackable, StackablePtr dest, std::size_t offset = 0);
+    PacketEntity::StackableEntityPtr _StackableEntity;
 };
 } // namespace Packet
 
