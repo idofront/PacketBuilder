@@ -5,10 +5,18 @@
 
 namespace PacketEntity
 {
+using DataArray = std::vector<uint8_t>;
+using DataArrayPtr = std::shared_ptr<DataArray>;
+
 class BinaryEntity : public StackableEntity
 {
   public:
     BinaryEntity();
+    virtual ~BinaryEntity();
+    virtual nlohmann::json ToJson() override;
+
+  public:
+    DataArrayPtr Data;
 };
 } // namespace PacketEntity
 

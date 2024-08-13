@@ -9,6 +9,13 @@ class EthernetEntity : public StackableEntity
 {
   public:
     EthernetEntity();
+    virtual ~EthernetEntity();
+    virtual nlohmann::json ToJson() override;
+
+  public:
+    std::string DestinationMac;
+    std::string SourceMac;
+    uint16_t Type;
 };
 } // namespace PacketEntity
 #endif
