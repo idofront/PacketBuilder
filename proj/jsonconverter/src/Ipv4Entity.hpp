@@ -24,6 +24,7 @@ class Ipv4Entity : public StackableEntity
     uint16_t HeaderChecksum;
     uint32_t SourceAddress;
     uint32_t DestinationAddress;
+    virtual std::string ToString() override;
 };
 } // namespace JsonConverter
 

@@ -1,5 +1,7 @@
 #include <Converter.hpp>
 #include <arpa/inet.h>
+#include <map>
+#include <typeindex>
 
 namespace JsonConverter
 {
@@ -28,9 +30,43 @@ void from_entity(const StackableEntity &entity, PacketBuilder::Stackable &header
     throw std::runtime_error("Not implemented");
 }
 
+nlohmann::json GetStackEntityJson(const StackableEntity &entity)
+{
+    auto stackType = entity.StackType;
+    if (stackType.empty())
+    {
+        return nlohmann::json(nullptr);
+    }
+
+    nlohmann::json stackEntityJson;
+
+    if (stackType == typeid(PacketBuilder::EthernetHeader).name())
+    {
+        stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<EthernetHeaderEntity>(entity.Stack)));
+    }
+    else if (stackType == typeid(PacketBuilder::Ipv4).name())
+    {
+        stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<Ipv4Entity>(entity.Stack)));
+    }
+    else if (stackType == typeid(PacketBuilder::Udp).name())
+    {
+        stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<UdpEntity>(entity.Stack)));
+    }
+    else if (stackType == typeid(PacketBuilder::Stackable).name())
+    {
+        stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<StackableEntity>(entity.Stack)));
+    }
+    else
+    {
+        throw std::runtime_error("Unknown type");
+    }
+
+    return stackEntityJson;
+}
+
 void to_json(nlohmann::json &j, const EthernetHeaderEntity &entity)
 {
-    auto stack = entity.Stack ? nlohmann::json(*entity.Stack) : nlohmann::json(nullptr);
+    auto stack = GetStackEntityJson(entity);
     j = nlohmann::json{{"DestinationMac", entity.DestinationMac},
                        {"SourceMac", entity.SourceMac},
                        {"EthernetType", entity.EthernetType},
@@ -53,15 +89,13 @@ void from_json(const nlohmann::json &j, EthernetHeaderEntity &entity)
     {
         auto stackJson = j.at("Stack");
         auto stackableEntityPtr = CreateStackableEntity(entity.StackType);
-        // *stackableEntityPtr =
-        stackJson.get<EthernetHeaderEntity>();
-
         entity.Stack = stackableEntityPtr;
     }
 }
 
 void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::EthernetHeader &header)
 {
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     auto destMac = std::string("");
     EthernetAddressToString(destMac, header.DestinationMac());
     auto srcMac = std::string("");
@@ -74,9 +108,14 @@ void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::EthernetHeader
     {
         entity.StackType = typeid(*(header.Stack())).name();
 
-        auto stackable = *header.Stack();
         auto stackableEntityPtr = CreateStackableEntity(entity.StackType);
-        to_entity(*stackableEntityPtr, stackable);
+        SPDLOG_DEBUG("StackType: {}", typeid(*(header.Stack())).name());
+        if (typeid(*(header.Stack())) == typeid(PacketBuilder::Ipv4))
+        {
+            to_entity(*std::dynamic_pointer_cast<Ipv4Entity>(stackableEntityPtr),
+                      *std::dynamic_pointer_cast<PacketBuilder::Ipv4>(header.Stack()));
+        }
+        entity.Stack = stackableEntityPtr;
     }
     else
     {
@@ -87,6 +126,7 @@ void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::EthernetHeader
 
 void from_entity(const EthernetHeaderEntity &entity, PacketBuilder::EthernetHeader &header)
 {
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
 void EthernetAddressToString(std::string &addr, const uint8_t *const ether_addr)
@@ -101,6 +141,28 @@ void EthernetAddressFromString(const std::string &addr, uint8_t *const ether_add
 {
     std::sscanf(addr.c_str(), "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", &ether_addr[0], &ether_addr[1],
                 &ether_addr[2], &ether_addr[3], &ether_addr[4], &ether_addr[5]);
+}
+
+void to_json(nlohmann::json &j, const Ipv4Entity &entity)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
+    auto stack = GetStackEntityJson(entity);
+    j = nlohmann::json{{"StackType", entity.StackType}, {"Stack", stack}};
+}
+
+void from_json(const nlohmann::json &j, Ipv4Entity &entity)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
+}
+
+void from_entity(const Ipv4Entity &entity, PacketBuilder::Ipv4 &header)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
+}
+
+void to_entity(Ipv4Entity &entity, const PacketBuilder::Ipv4 &header)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
 StackableEntityPtr CreateStackableEntity(const std::string &type)
@@ -155,5 +217,26 @@ StackableEntityPtr CreateStackableEntity(const std::string &type, const nlohmann
     }
 
     return map[type]();
+}
+
+void to_json(nlohmann::json &j, const UdpEntity &entity)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
+    j = nlohmann::json{{"StackType", entity.StackType}};
+}
+
+void from_json(const nlohmann::json &j, UdpEntity &entity)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
+}
+
+void to_entity(UdpEntity &entity, const PacketBuilder::Udp &header)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
+}
+
+void from_entity(const UdpEntity &entity, PacketBuilder::Udp &header)
+{
+    SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 } // namespace JsonConverter

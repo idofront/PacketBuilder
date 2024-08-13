@@ -1,6 +1,8 @@
 #include <Converter.hpp>
 #include <EthernetHeader.hpp>
 #include <EthernetHeaderEntity.hpp>
+#include <Ipv4.hpp>
+#include <Ipv4Entity.hpp>
 #include <spdlog/spdlog.h>
 
 std::string ToJson()
@@ -13,8 +15,37 @@ std::string ToJson()
     }
     auto ethernetHeaderEntity = JsonConverter::EthernetHeaderEntity();
 
-    JsonConverter::to_entity(ethernetHeaderEntity, *ethernetHeader);
+    auto ipv4 = std::make_shared<PacketBuilder::Ipv4>();
+    {
+        ipv4->Version(4);
+        ipv4->Ihl(5);
+        ipv4->Tos(0);
+        ipv4->TotalLength(20);
+        ipv4->Id(0);
+        ipv4->Flags(0);
+        ipv4->Ttl(64);
+        ipv4->Protocol(17);
+        ipv4->Checksum(0);
+        auto sourceIp = (uint32_t)0x0A0B0C0D;
+        ipv4->SourceIp(sourceIp);
+        auto destinationIp = (uint32_t)0x0E0F1011;
+        ipv4->DestinationIp(destinationIp);
+    }
+    auto ipv4Entity = JsonConverter::Ipv4Entity();
 
+    auto udp = std::make_shared<PacketBuilder::Udp>();
+    {
+        udp->SourcePort(12345);
+        udp->DestinationPort(54321);
+        udp->UdpLength(8);
+        udp->UdpChecksum(0);
+    }
+    auto udpEntity = JsonConverter::UdpEntity();
+
+    ethernetHeader->Stack(ipv4);
+    ipv4->Stack(udp);
+
+    JsonConverter::to_entity(ethernetHeaderEntity, *ethernetHeader);
     auto ethernetHeaderJson = nlohmann::json(ethernetHeaderEntity);
 
     auto jsonString = ethernetHeaderJson.dump(4);
@@ -33,10 +64,14 @@ void FromJson(std::string jsonString)
 
     JsonConverter::from_entity(ethernetHeaderEntity, *ethernetHeader);
 
-    SPDLOG_DEBUG("DestinationMac: {}", ethernetHeaderEntity.DestinationMac);
-    SPDLOG_DEBUG("SourceMac: {}", ethernetHeaderEntity.SourceMac);
-    SPDLOG_DEBUG("EthernetType: 0x{:04X}", ethernetHeaderEntity.EthernetType);
-    SPDLOG_DEBUG("StackType: {}", ethernetHeaderEntity.StackType);
+    JsonConverter::StackableEntityPtr entityPtr =
+        std::make_shared<JsonConverter::EthernetHeaderEntity>(ethernetHeaderEntity);
+    while (entityPtr)
+    {
+        auto str = entityPtr->ToString();
+        spdlog::debug("{}", str);
+        entityPtr = entityPtr->Stack;
+    }
 }
 
 /// @brief 動作確認用仮実装

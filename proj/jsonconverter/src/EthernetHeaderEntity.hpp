@@ -8,11 +8,13 @@
 
 namespace JsonConverter
 {
-struct EthernetHeaderEntity : public StackableEntity
+class EthernetHeaderEntity : public StackableEntity
 {
+  public:
     std::string DestinationMac;
     std::string SourceMac;
     uint16_t EthernetType;
+    virtual std::string ToString() override;
 };
 
 } // namespace JsonConverter

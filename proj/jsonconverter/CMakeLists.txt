@@ -6,6 +6,9 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 # packet ライブラリを追加
 include_directories(${PROJECT_SOURCE_DIR}/../packet/src)
 
+# utility ライブラリを追加
+include_directories(${PROJECT_SOURCE_DIR}/../utility/src)
+
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
 # ライブラリを生成

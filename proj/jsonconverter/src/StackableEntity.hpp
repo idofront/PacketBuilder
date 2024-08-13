@@ -19,6 +19,8 @@ class StackableEntity
     std::string StackType;
 
     StackableEntityPtr Stack;
+
+    virtual std::string ToString();
 };
 } // namespace JsonConverter
 #endif
