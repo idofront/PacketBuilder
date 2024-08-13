@@ -1,4 +1,4 @@
-#include <StackableEntity.hpp>
+#include <JCStackableEntity.hpp>
 #include <boost/format.hpp>
 
 namespace JsonConverter

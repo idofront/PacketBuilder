@@ -2,7 +2,7 @@
 #define JSON_CONVERTER__ETHERNET_HEADER_ENTITY_HPP__
 
 #include <EthernetHeader.hpp>
-#include <StackableEntity.hpp>
+#include <JCStackableEntity.hpp>
 #include <netinet/ether.h>
 #include <nlohmann/json.hpp>
 

@@ -1,4 +1,4 @@
-#include <Ipv4Entity.hpp>
+#include <JCIpv4Entity.hpp>
 
 #include <boost/format.hpp>
 

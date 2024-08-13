@@ -1,10 +1,10 @@
 #ifndef JSON_CONVERTER__CONVERTER_HPP__
 #define JSON_CONVERTER__CONVERTER_HPP__
 
-#include <EthernetHeaderEntity.hpp>
-#include <Ipv4Entity.hpp>
+#include <JCEthernetHeaderEntity.hpp>
+#include <JCIpv4Entity.hpp>
 #include <Udp.hpp>
-#include <UdpEntity.hpp>
+#include <JCUdpEntity.hpp>
 #include <nlohmann/json.hpp>
 
 namespace JsonConverter

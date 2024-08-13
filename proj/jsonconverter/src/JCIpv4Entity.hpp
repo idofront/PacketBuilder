@@ -2,7 +2,7 @@
 #define JSON_CONVERTER__IPV4_ENTITY_HPP__
 
 #include <Ipv4.hpp>
-#include <StackableEntity.hpp>
+#include <JCStackableEntity.hpp>
 
 namespace JsonConverter
 {

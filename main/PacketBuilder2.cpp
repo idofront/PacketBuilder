@@ -1,8 +1,8 @@
 #include <Converter.hpp>
 #include <EthernetHeader.hpp>
-#include <EthernetHeaderEntity.hpp>
 #include <Ipv4.hpp>
-#include <Ipv4Entity.hpp>
+#include <JCEthernetHeaderEntity.hpp>
+#include <JCIpv4Entity.hpp>
 #include <spdlog/spdlog.h>
 
 std::string ToJson()

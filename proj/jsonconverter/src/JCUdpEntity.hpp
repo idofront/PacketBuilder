@@ -1,7 +1,7 @@
 #ifndef JSON_CONVERTER__UDP_HPP__
 #define JSON_CONVERTER__UDP_HPP__
 
-#include <StackableEntity.hpp>
+#include <JCStackableEntity.hpp>
 #include <Udp.hpp>
 
 namespace JsonConverter

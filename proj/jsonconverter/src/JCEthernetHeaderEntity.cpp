@@ -1,4 +1,4 @@
-#include <EthernetHeaderEntity.hpp>
+#include <JCEthernetHeaderEntity.hpp>
 #include <Utility.hpp>
 #include <boost/format.hpp>
 #include <typeinfo>
