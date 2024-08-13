@@ -9,7 +9,7 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
-namespace PacketBuilder::Utility
+namespace Packet::Utility
 {
 using DataArray = uint8_t[];
 using DataArrayPtr = std::shared_ptr<DataArray>;
@@ -25,6 +25,6 @@ std::string HexDump(DataArrayPtr data, std::size_t length);
 /// @return
 std::string Demangle(const std::string &demangle);
 
-} // namespace PacketBuilder::Utility
+} // namespace Packet::Utility
 
 #endif

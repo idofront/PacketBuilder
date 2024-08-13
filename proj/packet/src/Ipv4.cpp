@@ -1,7 +1,7 @@
 #include <Ipv4.hpp>
 #include <arpa/inet.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 Ipv4::Ipv4() : Stackable(HeaderSize)
 {
@@ -186,4 +186,4 @@ uint16_t Ipv4::CalculateChecksum(const Ipv4 *ipv4)
     sum += (sum >> 16);
     return ~sum;
 }
-} // namespace PacketBuilder
+} // namespace Packet

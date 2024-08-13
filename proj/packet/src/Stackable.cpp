@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 
-namespace PacketBuilder
+namespace Packet
 {
 Stackable::Stackable(std::size_t length)
     : _Length(length), _Stackable(nullptr), _DataArray(std::shared_ptr<Utility::DataArray>(new uint8_t[this->_Length]))
@@ -103,4 +103,4 @@ StackablePtr Stackable::Tail(StackablePtr stackable)
     return stackable->_Stackable ? Tail(stackable->_Stackable) : stackable;
 }
 
-} // namespace PacketBuilder
+} // namespace Packet

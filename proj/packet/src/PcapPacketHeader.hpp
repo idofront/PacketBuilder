@@ -4,7 +4,7 @@
 #include <Stackable.hpp>
 #include <pcap.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 struct RecordHeader
 {
@@ -40,6 +40,6 @@ class PcapPacketHeader : public Stackable
     // struct pcap_pkthdr *Header() const;
     struct RecordHeader *Header() const;
 };
-} // namespace PacketBuilder
+} // namespace Packet
 
 #endif

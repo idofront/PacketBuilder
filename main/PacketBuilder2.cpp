@@ -7,7 +7,7 @@
 
 std::string ToJson()
 {
-    auto ethernetHeader = std::make_shared<PacketBuilder::Ethernet>();
+    auto ethernetHeader = std::make_shared<Packet::Ethernet>();
     {
         ethernetHeader->DestinationMac((uint8_t *)"\x0A\x0B\x0C\x0D\x0E\x0F");
         ethernetHeader->SourceMac((uint8_t *)"\x01\x02\x03\x04\x05\x06");
@@ -15,7 +15,7 @@ std::string ToJson()
     }
     auto ethernetHeaderEntity = JsonConverter::EthernetHeaderEntity();
 
-    auto ipv4 = std::make_shared<PacketBuilder::Ipv4>();
+    auto ipv4 = std::make_shared<Packet::Ipv4>();
     {
         ipv4->Version(4);
         ipv4->Ihl(5);
@@ -33,7 +33,7 @@ std::string ToJson()
     }
     auto ipv4Entity = JsonConverter::Ipv4Entity();
 
-    auto udp = std::make_shared<PacketBuilder::Udp>();
+    auto udp = std::make_shared<Packet::Udp>();
     {
         udp->SourcePort(12345);
         udp->DestinationPort(54321);
@@ -56,7 +56,7 @@ std::string ToJson()
 void FromJson(std::string jsonString)
 {
     auto ethernetHeaderEntity = JsonConverter::EthernetHeaderEntity();
-    auto ethernetHeader = std::make_shared<PacketBuilder::Ethernet>();
+    auto ethernetHeader = std::make_shared<Packet::Ethernet>();
 
     auto ethernetHeaderJson = nlohmann::json::parse(jsonString);
 

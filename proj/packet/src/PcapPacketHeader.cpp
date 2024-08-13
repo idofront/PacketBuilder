@@ -1,6 +1,6 @@
 #include <PcapPacketHeader.hpp>
 
-namespace PacketBuilder
+namespace Packet
 {
 PcapPacketHeader::PcapPacketHeader() : Stackable(HeaderSize)
 {
@@ -60,4 +60,4 @@ void PcapPacketHeader::OnStacked()
     IncludedLength(totalLength);
     OriginalLength(totalLength);
 }
-} // namespace PacketBuilder
+} // namespace Packet

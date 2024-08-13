@@ -4,7 +4,7 @@
 #include <Stackable.hpp>
 #include <netinet/ip.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 class Ipv4;
 using Ipv4Ptr = std::shared_ptr<Ipv4>;
@@ -49,6 +49,6 @@ class Ipv4 : public Stackable
     iphdr_t *Ipv4Header() const;
     static uint16_t CalculateChecksum(const Ipv4 *ipv4);
 };
-} // namespace PacketBuilder
+} // namespace Packet
 
 #endif

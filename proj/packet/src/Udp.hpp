@@ -5,7 +5,7 @@
 #include <Utility/Utility.hpp>
 #include <netinet/udp.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 class Udp;
 using UdpPtr = std::shared_ptr<Udp>;
@@ -30,6 +30,6 @@ class Udp : public Stackable
     static const std::size_t HeaderSize = sizeof(struct udphdr);
     struct udphdr *UdpHeader();
 };
-} // namespace PacketBuilder
+} // namespace Packet
 
 #endif

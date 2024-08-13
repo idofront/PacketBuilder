@@ -32,12 +32,12 @@ int main(int argc, char **argv)
 
     spdlog::set_level(options.LogLevel());
 
-    std::vector<PacketBuilder::StackablePtr> stackables;
+    std::vector<Packet::StackablePtr> stackables;
 
-    auto ether = PacketBuilder::EthernetPtr(new PacketBuilder::Ethernet());
-    auto ipv4 = PacketBuilder::Ipv4Ptr(new PacketBuilder::Ipv4());
-    auto udp = PacketBuilder::UdpPtr(new PacketBuilder::Udp());
-    auto payload = PacketBuilder::StackablePtr(new PacketBuilder::Stackable(32));
+    auto ether = Packet::EthernetPtr(new Packet::Ethernet());
+    auto ipv4 = Packet::Ipv4Ptr(new Packet::Ipv4());
+    auto udp = Packet::UdpPtr(new Packet::Udp());
+    auto payload = Packet::StackablePtr(new Packet::Stackable(32));
 
     // Ether header
     {
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
     for (auto i = 0; i < 5; i++)
     {
-        auto composed = PacketBuilder::Stackable::Compose(ether);
+        auto composed = Packet::Stackable::Compose(ether);
         stackables.push_back(composed);
     }
 
@@ -81,22 +81,22 @@ int main(int argc, char **argv)
     if (options.OutputFileType() == FileType::Pcap)
     {
         SPDLOG_DEBUG("Output to pcap file");
-        auto pcapFileHeader = PacketBuilder::PcapFileHeaderPtr(new PacketBuilder::PcapFileHeader());
-        SPDLOG_DEBUG("File Header: \n{}", PacketBuilder::Stackable::HexDump(pcapFileHeader));
+        auto pcapFileHeader = Packet::PcapFileHeaderPtr(new Packet::PcapFileHeader());
+        SPDLOG_DEBUG("File Header: \n{}", Packet::Stackable::HexDump(pcapFileHeader));
 
-        std::for_each(stackables.begin(), stackables.end(), [&pcapFileHeader](PacketBuilder::StackablePtr stackable) {
-            auto pcapPacketHeader = PacketBuilder::PcapPacketHeaderPtr(new PacketBuilder::PcapPacketHeader());
+        std::for_each(stackables.begin(), stackables.end(), [&pcapFileHeader](Packet::StackablePtr stackable) {
+            auto pcapPacketHeader = Packet::PcapPacketHeaderPtr(new Packet::PcapPacketHeader());
             pcapPacketHeader->Stack(stackable);
 
-            auto tail = PacketBuilder::Stackable::Tail(pcapFileHeader);
+            auto tail = Packet::Stackable::Tail(pcapFileHeader);
             tail->Stack(pcapPacketHeader);
-            SPDLOG_DEBUG("Packet Header: \n{}", PacketBuilder::Stackable::HexDump(pcapPacketHeader));
+            SPDLOG_DEBUG("Packet Header: \n{}", Packet::Stackable::HexDump(pcapPacketHeader));
         });
 
         std::ofstream fs(options.OutputFilename(), std::ios::out | std::ios::binary);
-        auto composed = PacketBuilder::Stackable::Compose(pcapFileHeader);
+        auto composed = Packet::Stackable::Compose(pcapFileHeader);
 
-        auto dump = PacketBuilder::Stackable::HexDump(composed);
+        auto dump = Packet::Stackable::HexDump(composed);
         SPDLOG_TRACE("Dump: \n{}", dump);
 
         auto ptr = (const char *)composed->DataArray().get();

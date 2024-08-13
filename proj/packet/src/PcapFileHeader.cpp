@@ -1,6 +1,6 @@
 #include <PcapFileHeader.hpp>
 
-namespace PacketBuilder
+namespace Packet
 {
 PcapFileHeader::PcapFileHeader() : Stackable(HeaderSize)
 {

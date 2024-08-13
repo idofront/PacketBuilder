@@ -18,13 +18,13 @@ void from_json(const nlohmann::json &j, StackableEntity &entity)
     throw std::runtime_error("Not implemented");
 }
 
-void to_entity(StackableEntity &entity, const PacketBuilder::Stackable &header)
+void to_entity(StackableEntity &entity, const Packet::Stackable &header)
 {
     // TODO not implemented
     throw std::runtime_error("Not implemented");
 }
 
-void from_entity(const StackableEntity &entity, PacketBuilder::Stackable &header)
+void from_entity(const StackableEntity &entity, Packet::Stackable &header)
 {
     // TODO not implemented
     throw std::runtime_error("Not implemented");
@@ -40,19 +40,19 @@ nlohmann::json GetStackEntityJson(const StackableEntity &entity)
 
     nlohmann::json stackEntityJson;
 
-    if (stackType == typeid(PacketBuilder::Ethernet).name())
+    if (stackType == typeid(Packet::Ethernet).name())
     {
         stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<EthernetHeaderEntity>(entity.Stack)));
     }
-    else if (stackType == typeid(PacketBuilder::Ipv4).name())
+    else if (stackType == typeid(Packet::Ipv4).name())
     {
         stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<Ipv4Entity>(entity.Stack)));
     }
-    else if (stackType == typeid(PacketBuilder::Udp).name())
+    else if (stackType == typeid(Packet::Udp).name())
     {
         stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<UdpEntity>(entity.Stack)));
     }
-    else if (stackType == typeid(PacketBuilder::Stackable).name())
+    else if (stackType == typeid(Packet::Stackable).name())
     {
         stackEntityJson = nlohmann::json(*(std::dynamic_pointer_cast<StackableEntity>(entity.Stack)));
     }
@@ -93,7 +93,7 @@ void from_json(const nlohmann::json &j, EthernetHeaderEntity &entity)
     }
 }
 
-void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::Ethernet &header)
+void to_entity(EthernetHeaderEntity &entity, const Packet::Ethernet &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     auto destMac = std::string("");
@@ -110,10 +110,10 @@ void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::Ethernet &head
 
         auto stackableEntityPtr = CreateStackableEntity(entity.StackType);
         SPDLOG_DEBUG("StackType: {}", typeid(*(header.Stack())).name());
-        if (typeid(*(header.Stack())) == typeid(PacketBuilder::Ipv4))
+        if (typeid(*(header.Stack())) == typeid(Packet::Ipv4))
         {
             to_entity(*std::dynamic_pointer_cast<Ipv4Entity>(stackableEntityPtr),
-                      *std::dynamic_pointer_cast<PacketBuilder::Ipv4>(header.Stack()));
+                      *std::dynamic_pointer_cast<Packet::Ipv4>(header.Stack()));
         }
         entity.Stack = stackableEntityPtr;
     }
@@ -124,7 +124,7 @@ void to_entity(EthernetHeaderEntity &entity, const PacketBuilder::Ethernet &head
     }
 }
 
-void from_entity(const EthernetHeaderEntity &entity, PacketBuilder::Ethernet &header)
+void from_entity(const EthernetHeaderEntity &entity, Packet::Ethernet &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
@@ -155,12 +155,12 @@ void from_json(const nlohmann::json &j, Ipv4Entity &entity)
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
-void from_entity(const Ipv4Entity &entity, PacketBuilder::Ipv4 &header)
+void from_entity(const Ipv4Entity &entity, Packet::Ipv4 &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
-void to_entity(Ipv4Entity &entity, const PacketBuilder::Ipv4 &header)
+void to_entity(Ipv4Entity &entity, const Packet::Ipv4 &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
@@ -168,10 +168,10 @@ void to_entity(Ipv4Entity &entity, const PacketBuilder::Ipv4 &header)
 StackableEntityPtr CreateStackableEntity(const std::string &type)
 {
     auto map = std::map<std::string, std::function<StackableEntityPtr(void)>>{
-        {typeid(PacketBuilder::Ethernet).name(), []() { return std::make_shared<EthernetHeaderEntity>(); }},
-        {typeid(PacketBuilder::Ipv4).name(), []() { return std::make_shared<Ipv4Entity>(); }},
-        {typeid(PacketBuilder::Udp).name(), []() { return std::make_shared<UdpEntity>(); }},
-        {typeid(PacketBuilder::Stackable).name(), []() { return std::make_shared<StackableEntity>(); }},
+        {typeid(Packet::Ethernet).name(), []() { return std::make_shared<EthernetHeaderEntity>(); }},
+        {typeid(Packet::Ipv4).name(), []() { return std::make_shared<Ipv4Entity>(); }},
+        {typeid(Packet::Udp).name(), []() { return std::make_shared<UdpEntity>(); }},
+        {typeid(Packet::Stackable).name(), []() { return std::make_shared<StackableEntity>(); }},
 
     };
     auto iterator = map.find(type);
@@ -185,25 +185,25 @@ StackableEntityPtr CreateStackableEntity(const std::string &type)
 StackableEntityPtr CreateStackableEntity(const std::string &type, const nlohmann::json &j)
 {
     auto map = std::map<std::string, std::function<StackableEntityPtr()>>{
-        {typeid(PacketBuilder::Ethernet).name(),
+        {typeid(Packet::Ethernet).name(),
          [&j]() {
              auto entity = j.get<EthernetHeaderEntity>();
              auto entityPtr = std::make_shared<EthernetHeaderEntity>(entity);
              return entityPtr;
          }},
-        {typeid(PacketBuilder::Ipv4).name(),
+        {typeid(Packet::Ipv4).name(),
          [&j]() {
              auto entity = j.get<Ipv4Entity>();
              auto entityPtr = std::make_shared<Ipv4Entity>(entity);
              return entityPtr;
          }},
-        {typeid(PacketBuilder::Udp).name(),
+        {typeid(Packet::Udp).name(),
          [&j]() {
              auto entity = j.get<UdpEntity>();
              auto entityPtr = std::make_shared<UdpEntity>(entity);
              return entityPtr;
          }},
-        {typeid(PacketBuilder::Stackable).name(),
+        {typeid(Packet::Stackable).name(),
          [&j]() {
              auto entity = j.get<StackableEntity>();
              auto entityPtr = std::make_shared<StackableEntity>(entity);
@@ -230,12 +230,12 @@ void from_json(const nlohmann::json &j, UdpEntity &entity)
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
-void to_entity(UdpEntity &entity, const PacketBuilder::Udp &header)
+void to_entity(UdpEntity &entity, const Packet::Udp &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }
 
-void from_entity(const UdpEntity &entity, PacketBuilder::Udp &header)
+void from_entity(const UdpEntity &entity, Packet::Udp &header)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 }

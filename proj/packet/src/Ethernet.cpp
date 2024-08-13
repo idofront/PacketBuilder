@@ -1,7 +1,7 @@
 #include <Ethernet.hpp>
 #include <arpa/inet.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 Ethernet::Ethernet() : Stackable(HeaderSize)
 {
@@ -43,4 +43,4 @@ struct ether_header *Ethernet::Header() const
     struct ether_header *header = reinterpret_cast<struct ether_header *>(data_ptr);
     return header;
 }
-} // namespace PacketBuilder
+} // namespace Packet

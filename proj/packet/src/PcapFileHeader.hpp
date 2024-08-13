@@ -4,7 +4,7 @@
 #include <Stackable.hpp>
 #include <pcap.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 class PcapFileHeader;
 using PcapFileHeaderPtr = std::shared_ptr<PcapFileHeader>;
@@ -33,7 +33,7 @@ class PcapFileHeader : public Stackable
     static const std::size_t HeaderSize = sizeof(struct pcap_file_header);
     struct pcap_file_header *Header() const;
 };
-} // namespace PacketBuilder
+} // namespace Packet
 
 // file header
 // c3d4 a1b2 0002 0004 0000 0000 0000 0000

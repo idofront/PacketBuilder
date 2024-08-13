@@ -1,7 +1,7 @@
 #include <Utility/Utility.hpp>
 #include <map>
 
-namespace PacketBuilder::Utility
+namespace Packet::Utility
 {
 std::string HexDump(DataArrayPtr data, std::size_t length)
 {
@@ -30,4 +30,4 @@ std::string Demangle(const std::string &demangle)
     return demangledNameAsString;
 }
 
-} // namespace PacketBuilder::Utility
+} // namespace Packet::Utility

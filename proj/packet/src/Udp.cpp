@@ -1,7 +1,7 @@
 #include <Udp.hpp>
 #include <arpa/inet.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 
 Udp::Udp() : Stackable(HeaderSize)
@@ -67,4 +67,4 @@ void Udp::OnStacked()
 
     // TODO Calculate checksum
 }
-} // namespace PacketBuilder
+} // namespace Packet

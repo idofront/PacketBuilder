@@ -2,7 +2,7 @@
 #define PACKET_BUILDER__STACKABLE_HPP__
 
 #include <Utility/Utility.hpp>
-namespace PacketBuilder
+namespace Packet
 {
 class Stackable;
 
@@ -33,6 +33,6 @@ class Stackable
     Utility::DataArrayPtr _DataArray;
     static void CopyDataArray(StackablePtr stackable, StackablePtr dest, std::size_t offset = 0);
 };
-} // namespace PacketBuilder
+} // namespace Packet
 
 #endif

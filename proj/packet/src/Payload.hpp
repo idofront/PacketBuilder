@@ -4,7 +4,7 @@
 #include <Stackable.hpp>
 #include <Utility/Utility.hpp>
 
-namespace PacketBuilder
+namespace Packet
 {
 class Payload : public Stackable
 {

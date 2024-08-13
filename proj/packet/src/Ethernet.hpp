@@ -4,7 +4,7 @@
 #include <Stackable.hpp>
 #include <netinet/ether.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 class Ethernet;
 using EthernetPtr = std::shared_ptr<Ethernet>;
@@ -24,5 +24,5 @@ class Ethernet : public Stackable
     static const std::size_t HeaderSize = 14;
     struct ether_header *Header() const;
 };
-} // namespace PacketBuilder
+} // namespace Packet
 #endif
