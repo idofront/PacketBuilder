@@ -5,6 +5,8 @@
 
 namespace PacketEntity
 {
+class EthernetEntity;
+using EthernetEntityPtr = std::shared_ptr<EthernetEntity>;
 class EthernetEntity : public StackableEntity
 {
   public:

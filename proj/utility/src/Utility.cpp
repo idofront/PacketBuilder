@@ -28,4 +28,18 @@ std::string HexDump(DataArrayPtr data, std::size_t length)
 
     return hexDump;
 }
+
+void EthernetAddressToString(std::string &addr, const uint8_t *const ether_addr)
+{
+    char buf[18];
+    sprintf(buf, "%02x:%02x:%02x:%02x:%02x:%02x", ether_addr[0], ether_addr[1], ether_addr[2], ether_addr[3],
+            ether_addr[4], ether_addr[5]);
+    addr = std::string(buf);
+}
+
+void EthernetAddressFromString(const std::string &addr, uint8_t *const ether_addr)
+{
+    std::sscanf(addr.c_str(), "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", &ether_addr[0], &ether_addr[1],
+                &ether_addr[2], &ether_addr[3], &ether_addr[4], &ether_addr[5]);
+}
 } // namespace Utility

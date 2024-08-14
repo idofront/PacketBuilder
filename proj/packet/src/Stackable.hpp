@@ -28,6 +28,7 @@ class Stackable
   protected:
     virtual void OnStacked();
     static std::size_t GetTotalLength(StackablePtr stackable);
+    PacketEntity::StackableEntityPtr StackableEntity();
 
   private:
     StackablePtr _Stackable = nullptr;

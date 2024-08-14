@@ -4,6 +4,8 @@
 #include <StackableEntity.hpp>
 namespace PacketEntity
 {
+class Ipv4Entity;
+using Ipv4EntityPtr = std::shared_ptr<Ipv4Entity>;
 class Ipv4Entity : public StackableEntity
 {
   public:

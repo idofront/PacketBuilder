@@ -41,9 +41,9 @@ int main(int argc, char **argv)
 
     // Ether header
     {
-        ether->DestinationMac((uint8_t *)"\x00\x00\x00\x00\x00\x00");
-        ether->SourceMac((uint8_t *)"\x00\x00\x00\x00\x00\x00");
-        ether->EthernetType(ETHERTYPE_IP);
+        ether->DestinationMac.Value((uint8_t *)"\x00\x00\x00\x00\x00\x00");
+        ether->SourceMac.Value((uint8_t *)"\x00\x00\x00\x00\x00\x00");
+        ether->EthernetType.Value(ETHERTYPE_IP);
     }
     // IP header
     {
@@ -51,8 +51,8 @@ int main(int argc, char **argv)
         struct sockaddr_in destinationAddress;
         inet_pton(AF_INET, "192.168.0.1", &(sourceAddress.sin_addr));
         inet_pton(AF_INET, "172.16.0.1", &(destinationAddress.sin_addr));
-        ipv4->SourceIp(sourceAddress);
-        ipv4->DestinationIp(destinationAddress);
+        ipv4->SourceAddress.Value(sourceAddress);
+        ipv4->DestinationAddress.Value(destinationAddress);
     }
 
     // UDP header

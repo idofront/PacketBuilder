@@ -25,6 +25,11 @@ std::string Demangle(const std::string &demangle);
 /// @param length
 /// @return
 std::string HexDump(DataArrayPtr data, std::size_t length);
+
+void EthernetAddressToString(std::string &addr, const uint8_t *const ether_addr);
+
+void EthernetAddressFromString(const std::string &addr, uint8_t *const ether_addr);
+
 } // namespace Utility
 
 #endif

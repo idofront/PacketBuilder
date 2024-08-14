@@ -1,6 +1,8 @@
 #ifndef PACKET_BUILDER__IPV4_HPP__
 #define PACKET_BUILDER__IPV4_HPP__
 
+#include <Ipv4Entity.hpp>
+#include <NotifyProperty.hpp>
 #include <Stackable.hpp>
 #include <netinet/ip.h>
 
@@ -14,31 +16,18 @@ class Ipv4 : public Stackable
   public:
     Ipv4();
 
-    int Version();
-    void Version(int version);
-    int Ihl();
-    void Ihl(int ihl);
+    Utility::NotifyProperty<int> Version;
+    Utility::NotifyProperty<int> Ihl;
 
-    uint8_t Tos();
-    void Tos(uint8_t tos);
-    uint16_t TotalLength();
-    void TotalLength(uint16_t totalLength);
-    uint16_t Id();
-    void Id(uint16_t id);
-    uint16_t Flags();
-    void Flags(uint16_t flags);
-    uint8_t Ttl();
-    void Ttl(uint8_t ttl);
-    uint8_t Protocol();
-    void Protocol(uint8_t protocol);
-    uint16_t Checksum();
-    void Checksum(uint16_t checksum);
-    uint32_t SourceIp();
-    void SourceIp(uint32_t sourceIp);
-    void SourceIp(sockaddr_in sourceIp);
-    uint32_t DestinationIp();
-    void DestinationIp(uint32_t destinationIp);
-    void DestinationIp(sockaddr_in destinationIp);
+    Utility::NotifyProperty<uint8_t> Tos;
+    Utility::NotifyProperty<uint16_t> TotalLength;
+    Utility::NotifyProperty<uint16_t> Id;
+    Utility::NotifyProperty<uint16_t> Flags;
+    Utility::NotifyProperty<uint8_t> Ttl;
+    Utility::NotifyProperty<uint8_t> Protocol;
+    Utility::NotifyProperty<uint16_t> Checksum;
+    Utility::NotifyProperty<sockaddr_in> SourceAddress;
+    Utility::NotifyProperty<sockaddr_in> DestinationAddress;
 
   protected:
     virtual void OnStacked() override;
@@ -48,6 +37,7 @@ class Ipv4 : public Stackable
     static const std::size_t HeaderSize = sizeof(iphdr_t);
     iphdr_t *Ipv4Header() const;
     static uint16_t CalculateChecksum(const Ipv4 *ipv4);
+    PacketEntity::Ipv4EntityPtr Entity();
 };
 } // namespace Packet
 

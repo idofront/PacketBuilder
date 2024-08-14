@@ -40,6 +40,11 @@ std::size_t Stackable::GetTotalLength(StackablePtr stackable)
     return stackable ? stackable->Length() + GetTotalLength(stackable->_Stackable) : 0;
 }
 
+PacketEntity::StackableEntityPtr Stackable::StackableEntity()
+{
+    return this->_StackableEntity;
+}
+
 void Stackable::CopyDataArray(StackablePtr stackable, StackablePtr dest, std::size_t offset)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
