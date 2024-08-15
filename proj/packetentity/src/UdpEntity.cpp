@@ -1,4 +1,5 @@
 #include <UdpEntity.hpp>
+#include <spdlog/spdlog.h>
 
 namespace PacketEntity
 {
@@ -18,5 +19,14 @@ nlohmann::json UdpEntity::ToJson()
     json["Length"] = this->Length;
     json["Checksum"] = this->Checksum;
     return json;
+}
+
+StackableEntityPtr UdpEntity::FromJson(nlohmann::json json)
+{
+    auto entity = std::make_shared<UdpEntity>();
+
+    SPDLOG_WARN("UdpEntity::FromJson not implemented");
+
+    return entity;
 }
 } // namespace PacketEntity

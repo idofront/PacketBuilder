@@ -13,6 +13,7 @@ class UdpEntity : public StackableEntity
     UdpEntity();
     virtual ~UdpEntity();
     virtual nlohmann::json ToJson() override;
+    static StackableEntityPtr FromJson(nlohmann::json json);
 
   public:
     uint16_t SourcePort;

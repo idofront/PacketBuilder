@@ -12,6 +12,7 @@ class Ipv4Entity : public StackableEntity
     Ipv4Entity();
     virtual ~Ipv4Entity();
     virtual nlohmann::json ToJson() override;
+    static StackableEntityPtr FromJson(nlohmann::json json);
 
   public:
     uint8_t Version;

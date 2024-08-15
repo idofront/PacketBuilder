@@ -1,4 +1,5 @@
 #include <Ipv4Entity.hpp>
+#include <spdlog/spdlog.h>
 
 namespace PacketEntity
 {
@@ -27,5 +28,14 @@ nlohmann::json Ipv4Entity::ToJson()
     json["SourceAddress"] = this->SourceAddress;
     json["DestinationAddress"] = this->DestinationAddress;
     return json;
+}
+
+StackableEntityPtr Ipv4Entity::FromJson(nlohmann::json json)
+{
+    auto entity = std::make_shared<Ipv4Entity>();
+
+    SPDLOG_WARN("Ipv4Entity::FromJson not implemented");
+
+    return entity;
 }
 } // namespace PacketEntity
