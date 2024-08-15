@@ -32,7 +32,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    spdlog::set_level(options.LogLevel());
+    spdlog::set_level(options.LogLevel.Value());
 
     std::vector<Packet::StackablePtr> stackables;
 
@@ -84,12 +84,12 @@ int main(int argc, char **argv)
         }
     }
 
-    if (options.OutputFileType() == FileType::None)
+    if (options.OutputFileType.Value() == FileType::None)
     {
         return 0;
     }
 
-    if (options.OutputFileType() == FileType::Pcap)
+    if (options.OutputFileType.Value() == FileType::Pcap)
     {
         SPDLOG_DEBUG("Output to pcap file");
         auto pcapFileHeader = Packet::PcapFileHeaderPtr(new Packet::PcapFileHeader());
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
         auto json = pcapFileHeader->StackableEntity()->ToJson();
         SPDLOG_DEBUG("\n{}", json.dump(4));
 
-        std::ofstream fs(options.OutputFilename(), std::ios::out | std::ios::binary);
+        std::ofstream fs(options.OutputFilename.Value(), std::ios::out | std::ios::binary);
         auto composed = Packet::Stackable::Compose(pcapFileHeader);
 
         auto dump = Packet::Stackable::HexDump(composed);

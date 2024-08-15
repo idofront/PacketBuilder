@@ -9,6 +9,8 @@
             "args": [
                 "-l",
                 "debug",
+                "-i",
+                "sample.json",
                 "-o",
                 "output.pcap"
             ],

@@ -1,53 +1,89 @@
 #ifndef PACKET_BUILDER__PACKET_BUILDER_HPP__
 #define PACKET_BUILDER__PACKET_BUILDER_HPP__
 
+#include <NotifyProperty.hpp>
 #include <algorithm>
+#include <boost/format.hpp>
 #include <cmdline.h>
 #include <filesystem>
+#include <spdlog/spdlog.h>
 
 enum FileType
 {
     Pcap,
     None
 };
+
+std::string FileTypeToString(FileType fileType)
+{
+    switch (fileType)
+    {
+    case FileType::Pcap:
+        return "Pcap";
+    case FileType::None:
+        return "None";
+    default:
+        return "Unknown";
+    }
+}
+
 class Options
 {
   public:
-    Options() = default;
-    std::filesystem::path OutputFilename() const
+    Options()
+        : InputFilename(std::filesystem::path()), OutputFilename(std::filesystem::path()),
+          OutputFileType(FileType::None), LogLevel(spdlog::level::info)
     {
-        return _OutputFilename;
-    }
+        InputFilename.RegisterCallback([](std::filesystem::path oldPath, std::filesystem::path newPath) {
+            if (std::filesystem::exists(newPath))
+            {
+                auto msgfmt = boost::format("Input file: %1%") % newPath.string();
+                SPDLOG_INFO(msgfmt.str());
+            }
+            else
+            {
+                auto msgfmt = boost::format("Input file %1% does not exist") % newPath.string();
+                throw std::runtime_error(msgfmt.str());
+            }
+        });
 
-    void OutputFilename(std::filesystem::path outputFilename)
-    {
-        _OutputFilename = outputFilename;
-    }
+        OutputFilename.RegisterCallback([this](std::filesystem::path oldPath, std::filesystem::path newPath) {
+            if (newPath.empty())
+            {
+                SPDLOG_INFO("Output is disabled");
+                return;
+            }
 
-    FileType OutputFileType() const
-    {
-        auto extension = _OutputFilename.extension().string();
-        std::transform(extension.begin(), extension.end(), extension.begin(),
-                       [](unsigned char c) { return std::tolower(c); });
+            if (std::filesystem::exists(newPath))
+            {
+                auto msgfmt = boost::format("Output file: %1%") % newPath.string();
+                SPDLOG_INFO(msgfmt.str());
 
-        std::map<std::string, FileType> fileTypeMap = {{".pcap", FileType::Pcap}};
-        auto type = fileTypeMap.find(extension);
-        return type == fileTypeMap.end() ? FileType::None : type->second;
-    }
+                auto extension = newPath.extension().string();
+                std::transform(extension.begin(), extension.end(), extension.begin(),
+                               [](unsigned char c) { return std::tolower(c); });
 
-    spdlog::level::level_enum LogLevel() const
-    {
-        return _LogLevel;
-    }
+                std::map<std::string, FileType> fileTypeMap = {{".pcap", FileType::Pcap}};
+                auto type = fileTypeMap.find(extension);
+                this->OutputFileType.Value(type == fileTypeMap.end() ? FileType::None : type->second);
+            }
+            else
+            {
+                auto msgfmt = boost::format("Output file %1% does not exist") % newPath.string();
+                throw std::runtime_error(msgfmt.str());
+            }
+        });
 
-    void LogLevel(spdlog::level::level_enum logLevel)
-    {
-        _LogLevel = logLevel;
-    }
+        OutputFileType.RegisterCallback([](FileType oldType, FileType newType) {
+            auto msgfmt = boost::format("Output file type: %1%(%2%)") % newType % FileTypeToString(newType);
+            SPDLOG_INFO(msgfmt.str());
+        });
+    };
 
-  private:
-    std::filesystem::path _OutputFilename;
-    spdlog::level::level_enum _LogLevel;
+    Utility::NotifyProperty<std::filesystem::path> InputFilename;
+    Utility::NotifyProperty<std::filesystem::path> OutputFilename;
+    Utility::NotifyProperty<FileType> OutputFileType;
+    Utility::NotifyProperty<spdlog::level::level_enum> LogLevel;
 };
 
 inline spdlog::level::level_enum LogLevelFromString(std::string str)
@@ -72,6 +108,8 @@ inline cmdline::parser GetArgumentParser()
     // Output file name.
     parser.add<std::string>("output", 'o', "Output file name", false, "");
 
+    parser.add<std::string>("input", 'i', "Input file name", false, "");
+
     // Log level.
     parser.add<std::string>("log", 'l', "Log level", false, "info",
                             cmdline::oneof<std::string>("trace", "debug", "info", "warn", "error", "critical"));
@@ -85,15 +123,18 @@ inline void ParseArguments(Options &options, int argc, char **argv, cmdline::par
 
     auto filepathAsString = parser.get<std::string>("output");
 
-    auto filepath = std::filesystem::path(filepathAsString);
-    options.OutputFilename(filepath);
+    auto outputFilepath = std::filesystem::path(filepathAsString);
+    options.OutputFilename.Value(outputFilepath);
 
-    options.LogLevel(LogLevelFromString(parser.get<std::string>("log")));
+    auto inputFilename = std::filesystem::path(parser.get<std::string>("input"));
+    options.InputFilename.Value(inputFilename);
+
+    options.LogLevel.Value(LogLevelFromString(parser.get<std::string>("log")));
 }
 
 inline void ValidateOutputOption(const Options &options)
 {
-    auto filepath = options.OutputFilename();
+    auto filepath = options.OutputFilename.Value();
     if (filepath.empty())
     {
         SPDLOG_INFO("Output is disabled");
@@ -101,7 +142,7 @@ inline void ValidateOutputOption(const Options &options)
     }
 
     auto validExtensions = {".pcap"};
-    auto extension = options.OutputFilename().extension();
+    auto extension = options.OutputFilename.Value().extension();
 
     if (std::find(validExtensions.begin(), validExtensions.end(), extension) == validExtensions.end())
     {
