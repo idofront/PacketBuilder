@@ -1,3 +1,5 @@
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include <Binary.hpp>
 #include <Ethernet.hpp>
 #include <Ipv4.hpp>
@@ -63,9 +65,12 @@ int main(int argc, char **argv)
 
     std::memset(payload->DataArray().get(), 0, 10);
 
-    udp->Stack(payload);
-    ipv4->Stack(udp);
-    ether->Stack(ipv4);
+    udp->Stack.Value(payload);
+    ipv4->Stack.Value(udp);
+    ether->Stack.Value(ipv4);
+
+    auto json = ether->StackableEntity()->ToJson();
+    SPDLOG_DEBUG("{}", json.dump(4));
 
     for (auto i = 0; i < 5; i++)
     {
@@ -86,10 +91,10 @@ int main(int argc, char **argv)
 
         std::for_each(stackables.begin(), stackables.end(), [&pcapFileHeader](Packet::StackablePtr stackable) {
             auto pcapPacketHeader = Packet::PcapPacketHeaderPtr(new Packet::PcapPacketHeader());
-            pcapPacketHeader->Stack(stackable);
+            pcapPacketHeader->Stack.Value(stackable);
 
             auto tail = Packet::Stackable::Tail(pcapFileHeader);
-            tail->Stack(pcapPacketHeader);
+            tail->Stack.Value(pcapPacketHeader);
             SPDLOG_DEBUG("Packet Header: \n{}", Packet::Stackable::HexDump(pcapPacketHeader));
         });
 

@@ -69,7 +69,7 @@
                 "${workspaceFolder}/build",
                 "--",
                 "-j",
-                "2"
+                "12"
             ],
             "group": {
                 "kind": "build",
@@ -90,7 +90,7 @@
                 "${workspaceFolder}/build",
                 "--",
                 "-j",
-                "2"
+                "12"
             ],
             "group": {
                 "kind": "build",
@@ -111,7 +111,7 @@
                 "${workspaceFolder}/build",
                 "--",
                 "-j",
-                "2"
+                "12"
             ],
             "group": {
                 "kind": "build",

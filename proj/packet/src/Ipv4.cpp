@@ -121,10 +121,12 @@ struct iphdr *Ipv4::Ipv4Header() const
     return ipv4Header;
 }
 
-void Ipv4::OnStacked()
+void Ipv4::OnStacked(StackablePtr newStackable, StackablePtr oldStackable)
 {
+    Stackable::OnStacked(newStackable, oldStackable);
+
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-    auto totalLength = Stackable::GetTotalLength(this->Stack()) + this->Length();
+    auto totalLength = Stackable::GetTotalLength(this->Stack.Value()) + this->Length();
     TotalLength.Value(totalLength);
     auto checksum = CalculateChecksum(this);
     SPDLOG_DEBUG("checksum: {:04X}", checksum);

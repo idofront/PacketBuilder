@@ -7,22 +7,19 @@
 namespace Packet
 {
 Stackable::Stackable(std::size_t length, PacketEntity::StackableEntityPtr stackableEntity)
-    : _Length(length), _Stackable(nullptr), _DataArray(std::shared_ptr<Utility::DataArray>(new uint8_t[this->_Length])),
-      _StackableEntity(stackableEntity)
+    : _Length(length), _DataArray(std::shared_ptr<Utility::DataArray>(new uint8_t[this->_Length])),
+      _StackableEntity(stackableEntity), Stack(nullptr)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     std::memset(this->_DataArray.get(), 0, this->_Length);
+
+    Stack.RegisterCallback(
+        [this](StackablePtr newStackable, StackablePtr oldStackable) { OnStacked(newStackable, oldStackable); });
 }
 
 Stackable::~Stackable()
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-}
-
-void Stackable::Stack(StackablePtr stackable)
-{
-    this->_Stackable = stackable;
-    OnStacked();
 }
 
 Utility::DataArrayPtr Stackable::DataArray() const
@@ -37,7 +34,7 @@ std::size_t Stackable::Length() const
 
 std::size_t Stackable::GetTotalLength(StackablePtr stackable)
 {
-    return stackable ? stackable->Length() + GetTotalLength(stackable->_Stackable) : 0;
+    return stackable ? stackable->Length() + GetTotalLength(stackable->Stack.Value()) : 0;
 }
 
 PacketEntity::StackableEntityPtr Stackable::StackableEntity()
@@ -58,7 +55,7 @@ void Stackable::CopyDataArray(StackablePtr stackable, StackablePtr dest, std::si
     SPDLOG_DEBUG("offset: {:4d}, length: {:4d}/{:4d}, typename: {}", offset, length, offset + length, typeName);
 
     std::memcpy(dest->DataArray().get() + offset, stackable->DataArray().get(), stackable->Length());
-    CopyDataArray(stackable->_Stackable, dest, offset + stackable->Length());
+    CopyDataArray(stackable->Stack.Value(), dest, offset + stackable->Length());
 }
 
 StackablePtr Stackable::Compose(StackablePtr stackable)
@@ -100,19 +97,25 @@ std::string Stackable::HexDump(StackablePtr stackable)
     return hexDump;
 }
 
-void Stackable::OnStacked()
+void Stackable::OnStacked(StackablePtr newStackable, StackablePtr oldStackable)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-}
 
-StackablePtr Stackable::Stack() const
-{
-    return this->_Stackable;
+    auto newStackableEntity = newStackable->StackableEntity();
+
+    if (newStackableEntity)
+    {
+        this->StackableEntity()->Stack.Value(newStackableEntity);
+    }
+    else
+    {
+        SPDLOG_DEBUG("The entity of new stackable is null");
+    }
 }
 
 StackablePtr Stackable::Tail(StackablePtr stackable)
 {
-    return stackable->_Stackable ? Tail(stackable->_Stackable) : stackable;
+    return stackable->Stack.Value() ? Tail(stackable->Stack.Value()) : stackable;
 }
 
 } // namespace Packet

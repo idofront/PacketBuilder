@@ -2,7 +2,7 @@
 
 namespace PacketEntity
 {
-StackableEntity::StackableEntity()
+StackableEntity::StackableEntity() : Stack(nullptr)
 {
 }
 
@@ -18,11 +18,13 @@ std::string StackableEntity::ToString()
 
 nlohmann::json StackableEntity::ToJson()
 {
-    throw std::runtime_error("Not implemented");
-}
+    auto json = nlohmann::json();
 
-StackableEntityPtr StackableEntity::Stack()
-{
-    return this->_Stack;
+    if (this->Stack.Value())
+    {
+        json["Stack"] = this->Stack.Value()->ToJson();
+    }
+
+    return json;
 }
 } // namespace PacketEntity

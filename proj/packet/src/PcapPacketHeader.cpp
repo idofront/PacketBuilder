@@ -54,10 +54,12 @@ struct RecordHeader *PcapPacketHeader::Header() const
     return header;
 }
 
-void PcapPacketHeader::OnStacked()
+void PcapPacketHeader::OnStacked(StackablePtr newStackable, StackablePtr oldStackable)
 {
+    Stackable::OnStacked(newStackable, oldStackable);
+
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-    auto totalLength = Stackable::GetTotalLength(this->Stack());
+    auto totalLength = Stackable::GetTotalLength(this->Stack.Value());
     IncludedLength(totalLength);
     OriginalLength(totalLength);
 }

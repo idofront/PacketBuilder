@@ -23,7 +23,7 @@ class Udp : public Stackable
     void UdpChecksum(uint16_t udpChecksum);
 
   protected:
-    virtual void OnStacked() override;
+    virtual void OnStacked(StackablePtr newStackable, StackablePtr oldStackable) override;
 
   private:
     static const std::size_t HeaderSize = sizeof(struct udphdr);

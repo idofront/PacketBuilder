@@ -32,7 +32,7 @@ class PcapPacketHeader : public Stackable
     void OriginalLength(uint32_t originalLength);
 
   protected:
-    virtual void OnStacked() override;
+    virtual void OnStacked(StackablePtr newStackable, StackablePtr oldStackable) override;
 
   private:
     // static const std::size_t HeaderSize = sizeof(struct pcap_pkthdr);

@@ -60,10 +60,12 @@ struct udphdr *Udp::UdpHeader()
     return udpHeader;
 }
 
-void Udp::OnStacked()
+void Udp::OnStacked(StackablePtr newStackable, StackablePtr oldStackable)
 {
+    Stackable::OnStacked(newStackable, oldStackable);
+
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-    auto totalLength = Stackable::GetTotalLength(this->Stack()) + this->Length();
+    auto totalLength = Stackable::GetTotalLength(this->Stack.Value()) + this->Length();
     UdpLength(totalLength);
 
     // TODO Calculate checksum

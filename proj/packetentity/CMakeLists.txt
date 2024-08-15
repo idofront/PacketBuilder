@@ -5,6 +5,9 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
+# utility ライブラリを追加
+include_directories(${PROJECT_SOURCE_DIR}/../utility/src)
+
 # ライブラリを生成
 add_library(packetentity STATIC ${SRC_FILES})
 
