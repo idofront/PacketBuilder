@@ -97,7 +97,7 @@ std::string Stackable::HexDump(StackablePtr stackable)
     return hexDump;
 }
 
-void Stackable::OnStacked(StackablePtr newStackable, StackablePtr oldStackable)
+void Stackable::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
 

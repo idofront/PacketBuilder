@@ -29,7 +29,7 @@ class Stackable
     PacketEntity::StackableEntityPtr StackableEntity();
 
   protected:
-    virtual void OnStacked(StackablePtr newStackable, StackablePtr oldStackable);
+    virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable);
     static std::size_t GetTotalLength(StackablePtr stackable);
 
   private:

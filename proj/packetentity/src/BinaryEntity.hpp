@@ -11,7 +11,7 @@ using DataArrayPtr = std::shared_ptr<DataArray>;
 class BinaryEntity : public StackableEntity
 {
   public:
-    BinaryEntity();
+    BinaryEntity(std::size_t length);
     virtual ~BinaryEntity();
     virtual nlohmann::json ToJson() override;
 

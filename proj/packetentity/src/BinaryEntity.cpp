@@ -2,7 +2,7 @@
 
 namespace PacketEntity
 {
-BinaryEntity::BinaryEntity() : StackableEntity()
+BinaryEntity::BinaryEntity(std::size_t length) : StackableEntity(), Data(std::make_shared<DataArray>(length))
 {
 }
 
@@ -13,7 +13,7 @@ BinaryEntity::~BinaryEntity()
 nlohmann::json BinaryEntity::ToJson()
 {
     auto json = StackableEntity::ToJson();
-    json["Data"] = nlohmann::json::parse(this->Data->begin(), this->Data->end());
+    json["Data"] = *(this->Data);
     return json;
 }
 

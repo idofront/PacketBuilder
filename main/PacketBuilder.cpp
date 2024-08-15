@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     auto ether = Packet::EthernetPtr(new Packet::Ethernet());
     auto ipv4 = Packet::Ipv4Ptr(new Packet::Ipv4());
     auto udp = Packet::UdpPtr(new Packet::Udp());
-    auto payload = Packet::BinaryPtr(new Packet::Binary(32));
+    auto payload = Packet::BinaryPtr(new Packet::Binary(4));
 
     // Ether header
     {
@@ -60,22 +60,28 @@ int main(int argc, char **argv)
     // UDP header
     {
         udp->SourcePort(60000);
-        udp->DestinationPort(40000);
+        udp->DestinationPort(50000);
     }
 
-    std::memset(payload->DataArray().get(), 0, 10);
+    std::memset(payload->DataArray().get(), 0, payload->Length());
 
     udp->Stack.Value(payload);
     ipv4->Stack.Value(udp);
     ether->Stack.Value(ipv4);
 
-    auto json = ether->StackableEntity()->ToJson();
-    SPDLOG_DEBUG("{}", json.dump(4));
-
-    for (auto i = 0; i < 5; i++)
+    for (auto i = 0; i < 1; i++)
     {
-        auto composed = Packet::Stackable::Compose(ether);
-        stackables.push_back(composed);
+        // Compose しないと意図せず値が変わってしまうが，動作確認用に Compose せず stackables に追加する．
+        // 必要に応じて Compose する．
+        if (false)
+        {
+            auto composed = Packet::Stackable::Compose(ether);
+            stackables.push_back(composed);
+        }
+        else
+        {
+            stackables.push_back(ether);
+        }
     }
 
     if (options.OutputFileType() == FileType::None)
@@ -97,6 +103,9 @@ int main(int argc, char **argv)
             tail->Stack.Value(pcapPacketHeader);
             SPDLOG_DEBUG("Packet Header: \n{}", Packet::Stackable::HexDump(pcapPacketHeader));
         });
+
+        auto json = pcapFileHeader->StackableEntity()->ToJson();
+        SPDLOG_DEBUG("\n{}", json.dump(4));
 
         std::ofstream fs(options.OutputFilename(), std::ios::out | std::ios::binary);
         auto composed = Packet::Stackable::Compose(pcapFileHeader);

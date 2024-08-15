@@ -30,7 +30,7 @@ class Ipv4 : public Stackable
     Utility::NotifyProperty<sockaddr_in> DestinationAddress;
 
   protected:
-    virtual void OnStacked(StackablePtr newStackable, StackablePtr oldStackable) override;
+    virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;
 
   private:
     using iphdr_t = struct iphdr;

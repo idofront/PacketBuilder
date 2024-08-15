@@ -121,9 +121,9 @@ struct iphdr *Ipv4::Ipv4Header() const
     return ipv4Header;
 }
 
-void Ipv4::OnStacked(StackablePtr newStackable, StackablePtr oldStackable)
+void Ipv4::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
 {
-    Stackable::OnStacked(newStackable, oldStackable);
+    Stackable::OnStacked(oldStackable, newStackable);
 
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     auto totalLength = Stackable::GetTotalLength(this->Stack.Value()) + this->Length();
@@ -162,6 +162,7 @@ uint16_t Ipv4::CalculateChecksum(const Ipv4 *ipv4)
 
 PacketEntity::Ipv4EntityPtr Ipv4::Entity()
 {
-    return std::dynamic_pointer_cast<PacketEntity::Ipv4Entity>(this->StackableEntity());
+    auto entity = this->StackableEntity();
+    return std::dynamic_pointer_cast<PacketEntity::Ipv4Entity>(entity);
 }
 } // namespace Packet

@@ -8,7 +8,9 @@
             "program": "${workspaceFolder}/bin/PacketBuilder",
             "args": [
                 "-l",
-                "debug"
+                "debug",
+                "-o",
+                "output.pcap"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

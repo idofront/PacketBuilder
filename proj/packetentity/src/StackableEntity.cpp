@@ -1,4 +1,5 @@
 #include <StackableEntity.hpp>
+#include <Utility.hpp>
 
 namespace PacketEntity
 {
@@ -23,6 +24,9 @@ nlohmann::json StackableEntity::ToJson()
     if (this->Stack.Value())
     {
         json["Stack"] = this->Stack.Value()->ToJson();
+        auto typeName = typeid(*this).name();
+        auto demangledName = Utility::Demangle(typeName);
+        json["EntityType"] = demangledName;
     }
 
     return json;

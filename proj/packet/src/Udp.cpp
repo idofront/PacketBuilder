@@ -60,9 +60,9 @@ struct udphdr *Udp::UdpHeader()
     return udpHeader;
 }
 
-void Udp::OnStacked(StackablePtr newStackable, StackablePtr oldStackable)
+void Udp::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
 {
-    Stackable::OnStacked(newStackable, oldStackable);
+    Stackable::OnStacked(oldStackable, newStackable);
 
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     auto totalLength = Stackable::GetTotalLength(this->Stack.Value()) + this->Length();
