@@ -20,6 +20,7 @@ class StackableEntity
 
     virtual std::string ToString();
     virtual nlohmann::json ToJson() = 0;
+    static StackableEntityPtr FromJson(nlohmann::json json);
 };
 } // namespace PacketEntity
 

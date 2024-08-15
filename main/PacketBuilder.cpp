@@ -1,6 +1,7 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
 #include <Binary.hpp>
+#include <EntityService.hpp>
 #include <Ethernet.hpp>
 #include <Ipv4.hpp>
 #include <PacketBuilder.hpp>
@@ -33,6 +34,15 @@ int main(int argc, char **argv)
     }
 
     spdlog::set_level(options.LogLevel.Value());
+
+    const auto isProcessingInputFile = true;
+    if (isProcessingInputFile)
+    {
+        auto inputFilename = options.InputFilename.Value();
+        auto inputStream = std::ifstream(inputFilename);
+        auto inputJson = nlohmann::json::parse(inputStream);
+        auto entity = PacketEntity::EntityService::FromJson(inputJson);
+    }
 
     std::vector<Packet::StackablePtr> stackables;
 

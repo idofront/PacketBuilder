@@ -31,4 +31,9 @@ nlohmann::json StackableEntity::ToJson()
 
     return json;
 }
+
+StackableEntityPtr FromJson(nlohmann::json json)
+{
+    throw std::runtime_error("Not implemented");
+}
 } // namespace PacketEntity

@@ -13,6 +13,7 @@ class EthernetEntity : public StackableEntity
     EthernetEntity();
     virtual ~EthernetEntity();
     virtual nlohmann::json ToJson() override;
+    static StackableEntityPtr FromJson(nlohmann::json json);
 
   public:
     std::string DestinationMac;

@@ -18,4 +18,13 @@ nlohmann::json EthernetEntity::ToJson()
     json["Type"] = this->Type;
     return json;
 }
+
+StackableEntityPtr EthernetEntity::FromJson(nlohmann::json json)
+{
+    auto entity = std::make_shared<EthernetEntity>();
+    entity->DestinationMac = json["DestinationMac"];
+    entity->SourceMac = json["SourceMac"];
+    entity->Type = json["Type"];
+    return entity;
+}
 } // namespace PacketEntity
