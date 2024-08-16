@@ -1,10 +1,11 @@
 #include <Udp.hpp>
+#include <UdpEntity.hpp>
 #include <arpa/inet.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 
-Udp::Udp() : Stackable(HeaderSize)
+Udp::Udp() : Stackable(HeaderSize, std::make_shared<PacketEntity::UdpEntity>())
 {
     this->SourcePort(0);
     this->DestinationPort(0);
@@ -59,12 +60,14 @@ struct udphdr *Udp::UdpHeader()
     return udpHeader;
 }
 
-void Udp::OnStacked()
+void Udp::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
 {
+    Stackable::OnStacked(oldStackable, newStackable);
+
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-    auto totalLength = Stackable::GetTotalLength(this->Stack()) + this->Length();
+    auto totalLength = Stackable::GetTotalLength(this->Stack.Value()) + this->Length();
     UdpLength(totalLength);
 
     // TODO Calculate checksum
 }
-} // namespace PacketBuilder
+} // namespace Packet

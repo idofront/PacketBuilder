@@ -1,146 +1,117 @@
 #include <Ipv4.hpp>
 #include <arpa/inet.h>
 
-namespace PacketBuilder
+namespace Packet
 {
-Ipv4::Ipv4() : Stackable(HeaderSize)
+Ipv4::Ipv4()
+    : Stackable(HeaderSize, std::make_shared<PacketEntity::Ipv4Entity>()), Version(0), Ihl(0), Tos(0), TotalLength(0),
+      Id(0), Flags(0), Ttl(0), Protocol(0), Checksum(0), SourceAddress({0}), DestinationAddress({0})
 {
+    this->Version.RegisterCallback([this](int oldValue, int newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->version = newValue;
+
+        Entity()->Version = newValue;
+    });
+
+    this->Ihl.RegisterCallback([this](int oldValue, int newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->ihl = newValue;
+
+        Entity()->IHL = newValue;
+    });
+
+    this->Tos.RegisterCallback([this](uint8_t oldValue, uint8_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->tos = newValue;
+
+        Entity()->DSCP = newValue >> 2;
+        Entity()->ECN = newValue & 0x03;
+    });
+
+    this->TotalLength.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->tot_len = htons(newValue);
+
+        Entity()->TotalLength = newValue;
+    });
+
+    this->Id.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->id = htons(newValue);
+
+        Entity()->Identification = newValue;
+    });
+
+    this->Flags.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->frag_off = htons(newValue);
+
+        Entity()->Flags = newValue;
+    });
+
+    this->Ttl.RegisterCallback([this](uint8_t oldValue, uint8_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->ttl = newValue;
+
+        Entity()->TTL = newValue;
+    });
+
+    this->Protocol.RegisterCallback([this](uint8_t oldValue, uint8_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->protocol = newValue;
+
+        Entity()->Protocol = newValue;
+    });
+
+    this->Checksum.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->check = htons(newValue);
+
+        Entity()->HeaderChecksum = newValue;
+    });
+
+    this->SourceAddress.RegisterCallback([this](sockaddr_in oldValue, sockaddr_in newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->saddr = newValue.sin_addr.s_addr;
+
+        Entity()->SourceAddress = ntohl(newValue.sin_addr.s_addr);
+    });
+
+    this->DestinationAddress.RegisterCallback([this](sockaddr_in oldValue, sockaddr_in newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->daddr = newValue.sin_addr.s_addr;
+
+        Entity()->DestinationAddress = ntohl(newValue.sin_addr.s_addr);
+    });
+
     struct sockaddr_in sourceAddress;
     struct sockaddr_in destinationAddress;
     inet_pton(AF_INET, "0.0.0.0", &(sourceAddress.sin_addr));
     inet_pton(AF_INET, "0.0.0.0", &(destinationAddress.sin_addr));
 
-    this->Version(4);
-    this->Ihl(5);
-    this->Tos(0);
-    this->TotalLength(this->Length());
-    this->Id(0);
-    this->Flags(0);
-    this->Ttl(64);
-    this->Protocol(IPPROTO_UDP);
-    this->Checksum(0);
-    this->SourceIp(sourceAddress);
-    this->DestinationIp(destinationAddress);
-}
-
-int Ipv4::Version()
-{
-    return this->Ipv4Header()->version;
-}
-
-void Ipv4::Version(int version)
-{
-    this->Ipv4Header()->version = version;
-}
-
-int Ipv4::Ihl()
-{
-    return this->Ipv4Header()->ihl;
-}
-
-void Ipv4::Ihl(int ihl)
-{
-    this->Ipv4Header()->ihl = ihl;
-}
-
-uint8_t Ipv4::Tos()
-{
-    return this->Ipv4Header()->tos;
-}
-
-void Ipv4::Tos(uint8_t tos)
-{
-    this->Ipv4Header()->tos = tos;
-}
-
-uint16_t Ipv4::TotalLength()
-{
-    return this->Ipv4Header()->tot_len;
-}
-
-void Ipv4::TotalLength(uint16_t totalLength)
-{
-    this->Ipv4Header()->tot_len = htons(totalLength);
-}
-
-uint16_t Ipv4::Id()
-{
-    return this->Ipv4Header()->id;
-}
-
-void Ipv4::Id(uint16_t id)
-{
-    this->Ipv4Header()->id = htons(id);
-}
-
-uint16_t Ipv4::Flags()
-{
-    return this->Ipv4Header()->frag_off;
-}
-
-void Ipv4::Flags(uint16_t flags)
-{
-    this->Ipv4Header()->frag_off = htons(flags);
-}
-
-uint8_t Ipv4::Ttl()
-{
-    return this->Ipv4Header()->ttl;
-}
-
-void Ipv4::Ttl(uint8_t ttl)
-{
-    this->Ipv4Header()->ttl = ttl;
-}
-
-uint8_t Ipv4::Protocol()
-{
-    return this->Ipv4Header()->protocol;
-}
-
-void Ipv4::Protocol(uint8_t protocol)
-{
-    this->Ipv4Header()->protocol = protocol;
-}
-
-uint16_t Ipv4::Checksum()
-{
-    return this->Ipv4Header()->check;
-}
-
-void Ipv4::Checksum(uint16_t checksum)
-{
-    this->Ipv4Header()->check = htons(checksum);
-}
-
-uint32_t Ipv4::SourceIp()
-{
-    return this->Ipv4Header()->saddr;
-}
-
-void Ipv4::SourceIp(uint32_t sourceIp)
-{
-    this->Ipv4Header()->saddr = htonl(sourceIp);
-}
-
-void Ipv4::SourceIp(sockaddr_in sourceIp)
-{
-    this->Ipv4Header()->saddr = sourceIp.sin_addr.s_addr;
-}
-
-uint32_t Ipv4::DestinationIp()
-{
-    return this->Ipv4Header()->daddr;
-}
-
-void Ipv4::DestinationIp(uint32_t destinationIp)
-{
-    this->Ipv4Header()->daddr = htonl(destinationIp);
-}
-
-void Ipv4::DestinationIp(sockaddr_in destinationIp)
-{
-    this->Ipv4Header()->daddr = destinationIp.sin_addr.s_addr;
+    this->Version.Value(4);
+    this->Ihl.Value(5);
+    this->Tos.Value(0);
+    this->TotalLength.Value(this->Length());
+    this->Id.Value(0);
+    this->Flags.Value(0);
+    this->Ttl.Value(64);
+    this->Protocol.Value(IPPROTO_UDP);
+    this->Checksum.Value(0);
+    this->SourceAddress.Value(sourceAddress);
+    this->DestinationAddress.Value(destinationAddress);
 }
 
 struct iphdr *Ipv4::Ipv4Header() const
@@ -150,14 +121,16 @@ struct iphdr *Ipv4::Ipv4Header() const
     return ipv4Header;
 }
 
-void Ipv4::OnStacked()
+void Ipv4::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
 {
+    Stackable::OnStacked(oldStackable, newStackable);
+
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-    auto totalLength = Stackable::GetTotalLength(this->Stack()) + this->Length();
-    TotalLength(totalLength);
+    auto totalLength = Stackable::GetTotalLength(this->Stack.Value()) + this->Length();
+    TotalLength.Value(totalLength);
     auto checksum = CalculateChecksum(this);
     SPDLOG_DEBUG("checksum: {:04X}", checksum);
-    Checksum(checksum);
+    Checksum.Value(checksum);
 }
 
 uint16_t Ipv4::CalculateChecksum(const Ipv4 *ipv4)
@@ -186,4 +159,10 @@ uint16_t Ipv4::CalculateChecksum(const Ipv4 *ipv4)
     sum += (sum >> 16);
     return ~sum;
 }
-} // namespace PacketBuilder
+
+PacketEntity::Ipv4EntityPtr Ipv4::Entity()
+{
+    auto entity = this->StackableEntity();
+    return std::dynamic_pointer_cast<PacketEntity::Ipv4Entity>(entity);
+}
+} // namespace Packet

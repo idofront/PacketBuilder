@@ -1,8 +1,9 @@
 #include <PcapFileHeader.hpp>
+#include <PcapFileHeaderEntity.hpp>
 
-namespace PacketBuilder
+namespace Packet
 {
-PcapFileHeader::PcapFileHeader() : Stackable(HeaderSize)
+PcapFileHeader::PcapFileHeader() : Stackable(HeaderSize, std::make_shared<PacketEntity::PcapFileHeaderEntity>())
 {
     this->MagicNumber(0xa1b2c3d4);
     this->VersionMajor(2);
@@ -89,4 +90,4 @@ struct pcap_file_header *PcapFileHeader::Header() const
     struct pcap_file_header *header = reinterpret_cast<struct pcap_file_header *>(data_ptr);
     return header;
 }
-} // namespace PacketBuilder
+} // namespace Packet

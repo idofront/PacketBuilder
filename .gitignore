@@ -1,4 +1,5 @@
 *.pcap
+*.json
 build/
 bin/
 include/

@@ -6,7 +6,14 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/PacketBuilder",
-            "args": [],
+            "args": [
+                "-l",
+                "debug",
+                "-i",
+                "sample.json",
+                "-o",
+                "output.pcap"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

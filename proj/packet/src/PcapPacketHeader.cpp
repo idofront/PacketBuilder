@@ -1,8 +1,9 @@
 #include <PcapPacketHeader.hpp>
+#include <PcapPacketHeaderEntity.hpp>
 
-namespace PacketBuilder
+namespace Packet
 {
-PcapPacketHeader::PcapPacketHeader() : Stackable(HeaderSize)
+PcapPacketHeader::PcapPacketHeader() : Stackable(HeaderSize, std::make_shared<PacketEntity::PcapPacketHeaderEntity>())
 {
 }
 
@@ -53,11 +54,13 @@ struct RecordHeader *PcapPacketHeader::Header() const
     return header;
 }
 
-void PcapPacketHeader::OnStacked()
+void PcapPacketHeader::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
 {
+    Stackable::OnStacked(oldStackable, newStackable);
+
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-    auto totalLength = Stackable::GetTotalLength(this->Stack());
+    auto totalLength = Stackable::GetTotalLength(this->Stack.Value());
     IncludedLength(totalLength);
     OriginalLength(totalLength);
 }
-} // namespace PacketBuilder
+} // namespace Packet

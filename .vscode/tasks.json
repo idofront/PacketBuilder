@@ -133,7 +133,10 @@
                 "--target",
                 "clean"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            },
             "problemMatcher": [
                 "$gcc"
             ],

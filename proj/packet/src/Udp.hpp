@@ -2,10 +2,9 @@
 #define PACKET_BUILDER__UDP_HPP__
 
 #include <Stackable.hpp>
-#include <Utility/Utility.hpp>
 #include <netinet/udp.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 class Udp;
 using UdpPtr = std::shared_ptr<Udp>;
@@ -24,12 +23,12 @@ class Udp : public Stackable
     void UdpChecksum(uint16_t udpChecksum);
 
   protected:
-    virtual void OnStacked() override;
+    virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;
 
   private:
     static const std::size_t HeaderSize = sizeof(struct udphdr);
     struct udphdr *UdpHeader();
 };
-} // namespace PacketBuilder
+} // namespace Packet
 
 #endif

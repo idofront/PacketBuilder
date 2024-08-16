@@ -4,7 +4,7 @@
 #include <Stackable.hpp>
 #include <pcap.h>
 
-namespace PacketBuilder
+namespace Packet
 {
 struct RecordHeader
 {
@@ -32,7 +32,7 @@ class PcapPacketHeader : public Stackable
     void OriginalLength(uint32_t originalLength);
 
   protected:
-    virtual void OnStacked() override;
+    virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;
 
   private:
     // static const std::size_t HeaderSize = sizeof(struct pcap_pkthdr);
@@ -40,6 +40,6 @@ class PcapPacketHeader : public Stackable
     // struct pcap_pkthdr *Header() const;
     struct RecordHeader *Header() const;
 };
-} // namespace PacketBuilder
+} // namespace Packet
 
 #endif
