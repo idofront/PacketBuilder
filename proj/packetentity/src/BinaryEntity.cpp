@@ -20,9 +20,14 @@ nlohmann::json BinaryEntity::ToJson()
 
 StackableEntityPtr BinaryEntity::FromJson(nlohmann::json json)
 {
-    auto entity = std::make_shared<BinaryEntity>(8);
+    auto length = json["Data"].size();
 
-    SPDLOG_WARN("BinaryEntity::FromJson not implemented");
+    auto entity = std::make_shared<BinaryEntity>(length);
+
+    for (std::size_t i = 0; i < length; i++)
+    {
+        entity->Data->at(i) = json["Data"][i];
+    }
 
     return entity;
 }

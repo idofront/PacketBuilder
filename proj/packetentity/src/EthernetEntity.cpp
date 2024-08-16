@@ -1,4 +1,5 @@
 #include <EthernetEntity.hpp>
+#include <spdlog/spdlog.h>
 
 namespace PacketEntity
 {

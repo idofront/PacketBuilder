@@ -34,7 +34,19 @@ StackableEntityPtr Ipv4Entity::FromJson(nlohmann::json json)
 {
     auto entity = std::make_shared<Ipv4Entity>();
 
-    SPDLOG_WARN("Ipv4Entity::FromJson not implemented");
+    entity->Version = json["Version"].get_to(entity->Version);
+    entity->IHL = json["IHL"].get_to(entity->IHL);
+    entity->DSCP = json["DSCP"].get_to(entity->DSCP);
+    entity->ECN = json["ECN"].get_to(entity->ECN);
+    entity->TotalLength = json["TotalLength"].get_to(entity->TotalLength);
+    entity->Identification = json["Identification"].get_to(entity->Identification);
+    entity->Flags = json["Flags"].get_to(entity->Flags);
+    entity->FragmentOffset = json["FragmentOffset"].get_to(entity->FragmentOffset);
+    entity->TTL = json["TTL"].get_to(entity->TTL);
+    entity->Protocol = json["Protocol"].get_to(entity->Protocol);
+    entity->HeaderChecksum = json["HeaderChecksum"].get_to(entity->HeaderChecksum);
+    entity->SourceAddress = json["SourceAddress"].get_to(entity->SourceAddress);
+    entity->DestinationAddress = json["DestinationAddress"].get_to(entity->DestinationAddress);
 
     return entity;
 }

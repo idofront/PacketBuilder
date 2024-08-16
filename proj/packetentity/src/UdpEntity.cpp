@@ -25,7 +25,10 @@ StackableEntityPtr UdpEntity::FromJson(nlohmann::json json)
 {
     auto entity = std::make_shared<UdpEntity>();
 
-    SPDLOG_WARN("UdpEntity::FromJson not implemented");
+    entity->SourcePort = json["SourcePort"];
+    entity->DestinationPort = json["DestinationPort"];
+    entity->Length = json["Length"];
+    entity->Checksum = json["Checksum"];
 
     return entity;
 }

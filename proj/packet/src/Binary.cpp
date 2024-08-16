@@ -7,6 +7,15 @@ Binary::Binary(std::size_t length) : Stackable(length, std::make_shared<PacketEn
 {
 }
 
+Binary::Binary(PacketEntity::BinaryEntityPtr entity) : Stackable(entity->Data->size(), entity)
+{
+    auto length = entity->Data->size();
+    for (std::size_t i = 0; i < length; i++)
+    {
+        this->DataArray()[i] = entity->Data->at(i);
+    }
+}
+
 Binary::~Binary()
 {
 }

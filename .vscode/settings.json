@@ -79,7 +79,9 @@
         "variant": "cpp",
         "bitset": "cpp",
         "regex": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "forward_list": "cpp",
+        "valarray": "cpp"
     },
     "testMate.cpp.test.executables": "bin/test/*",
     "editor.formatOnSave": true,

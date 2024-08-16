@@ -5,52 +5,27 @@
 namespace Packet
 {
 
-Udp::Udp() : Stackable(HeaderSize, std::make_shared<PacketEntity::UdpEntity>())
+Udp::Udp()
+    : Stackable(HeaderSize, std::make_shared<PacketEntity::UdpEntity>()), SourcePort(0), DestinationPort(0),
+      UdpLength(0), UdpChecksum(0)
 {
-    this->SourcePort(0);
-    this->DestinationPort(0);
-    this->UdpLength(this->Length());
-    this->UdpChecksum(0);
+    RegisterCallbacks();
+
+    this->SourcePort.Value(0);
+    this->DestinationPort.Value(0);
+    this->UdpLength.Value(this->Length());
+    this->UdpChecksum.Value(0);
 }
 
-uint16_t Udp::SourcePort()
+Udp::Udp(PacketEntity::UdpEntityPtr entity)
+    : Stackable(HeaderSize, entity), SourcePort(0), DestinationPort(0), UdpLength(0), UdpChecksum(0)
 {
-    return this->UdpHeader()->uh_sport;
-}
+    RegisterCallbacks();
 
-void Udp::SourcePort(uint16_t sourcePort)
-{
-    this->UdpHeader()->uh_sport = htons(sourcePort);
-}
-
-uint16_t Udp::DestinationPort()
-{
-    return this->UdpHeader()->uh_dport;
-}
-
-void Udp::DestinationPort(uint16_t destinationPort)
-{
-    this->UdpHeader()->uh_dport = htons(destinationPort);
-}
-
-uint16_t Udp::UdpLength()
-{
-    return this->UdpHeader()->uh_ulen;
-}
-
-void Udp::UdpLength(uint16_t udpLength)
-{
-    this->UdpHeader()->uh_ulen = htons(udpLength);
-}
-
-uint16_t Udp::UdpChecksum()
-{
-    return this->UdpHeader()->uh_sum;
-}
-
-void Udp::UdpChecksum(uint16_t udpChecksum)
-{
-    this->UdpHeader()->uh_sum = htons(udpChecksum);
+    this->SourcePort.Value(entity->SourcePort);
+    this->DestinationPort.Value(entity->DestinationPort);
+    this->UdpLength.Value(entity->Length);
+    this->UdpChecksum.Value(entity->Checksum);
 }
 
 struct udphdr *Udp::UdpHeader()
@@ -66,8 +41,48 @@ void Udp::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
 
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
     auto totalLength = Stackable::GetTotalLength(this->Stack.Value()) + this->Length();
-    UdpLength(totalLength);
+    UdpLength.Value(totalLength);
 
     // TODO Calculate checksum
+}
+
+void Udp::RegisterCallbacks()
+{
+    this->SourcePort.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->UdpHeader();
+        header->source = htons(newValue);
+
+        Entity()->SourcePort = newValue;
+    });
+
+    this->DestinationPort.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->UdpHeader();
+        header->dest = htons(newValue);
+
+        Entity()->DestinationPort = newValue;
+    });
+
+    this->UdpLength.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->UdpHeader();
+        header->len = htons(newValue);
+
+        Entity()->Length = newValue;
+    });
+
+    this->UdpChecksum.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->UdpHeader();
+        header->check = htons(newValue);
+
+        Entity()->Checksum = newValue;
+    });
+}
+
+PacketEntity::UdpEntityPtr Udp::Entity()
+{
+    return std::dynamic_pointer_cast<PacketEntity::UdpEntity>(this->StackableEntity());
 }
 } // namespace Packet

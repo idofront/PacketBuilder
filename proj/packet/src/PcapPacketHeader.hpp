@@ -1,7 +1,10 @@
 #ifndef PACKET_BUILDER__PCAP_PACKET_HEADER_HPP__
 #define PACKET_BUILDER__PCAP_PACKET_HEADER_HPP__
 
+#include <NotifyProperty.hpp>
+#include <PcapPacketHeaderEntity.hpp>
 #include <Stackable.hpp>
+#include <chrono>
 #include <pcap.h>
 
 namespace Packet
@@ -22,14 +25,10 @@ class PcapPacketHeader : public Stackable
   public:
     PcapPacketHeader();
 
-    uint32_t TimestampSeconds() const;
-    void TimestampSeconds(uint32_t timestampSeconds);
-    uint32_t TimestampMicroseconds() const;
-    void TimestampMicroseconds(uint32_t timestampMicroseconds);
-    uint32_t IncludedLength() const;
-    void IncludedLength(uint32_t includedLength);
-    uint32_t OriginalLength() const;
-    void OriginalLength(uint32_t originalLength);
+    Utility::NotifyProperty<std::chrono::seconds> TimestampSeconds;
+    Utility::NotifyProperty<std::chrono::microseconds> TimestampMicroseconds;
+    Utility::NotifyProperty<uint32_t> IncludedLength;
+    Utility::NotifyProperty<uint32_t> OriginalLength;
 
   protected:
     virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;
@@ -39,6 +38,9 @@ class PcapPacketHeader : public Stackable
     static const std::size_t HeaderSize = sizeof(struct RecordHeader);
     // struct pcap_pkthdr *Header() const;
     struct RecordHeader *Header() const;
+
+    PacketEntity::PcapPacketHeaderEntityPtr Entity();
+    void RegisterCallbacks();
 };
 } // namespace Packet
 
