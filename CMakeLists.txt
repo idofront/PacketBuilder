@@ -34,6 +34,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 # include ディレクトリを追加
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/submodules)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/main)
 
