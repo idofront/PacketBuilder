@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         auto inputFilename = options.InputFilename.Value();
         auto inputStream = std::ifstream(inputFilename);
         auto inputJson = nlohmann::json::parse(inputStream);
-        auto entity = PacketEntity::EntityService::FromJson(inputJson);
+        auto entity = PacketEntity::EntityService::ParseEntities(inputJson);
     }
 
     std::vector<Packet::StackablePtr> stackables;
