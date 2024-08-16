@@ -1,8 +1,9 @@
 # PacketBuilder
 
-## Install
+## Build
 
 ```bash
+git submodule update --init --recursive
 apt install \
     libpcap-dev \
     libspdlog-dev \

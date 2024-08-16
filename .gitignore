@@ -2,4 +2,3 @@
 *.json
 build/
 bin/
-include/
