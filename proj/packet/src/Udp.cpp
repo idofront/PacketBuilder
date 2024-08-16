@@ -13,6 +13,15 @@ Udp::Udp() : Stackable(HeaderSize, std::make_shared<PacketEntity::UdpEntity>())
     this->UdpChecksum(0);
 }
 
+Udp::Udp(PacketEntity::UdpEntityPtr entity) : Stackable(HeaderSize, entity)
+{
+    auto header = this->UdpHeader();
+    this->SourcePort(entity->SourcePort);
+    this->DestinationPort(entity->DestinationPort);
+    this->UdpLength(entity->Length);
+    this->UdpChecksum(entity->Checksum);
+}
+
 uint16_t Udp::SourcePort()
 {
     return this->UdpHeader()->uh_sport;
@@ -69,5 +78,10 @@ void Udp::OnStacked(StackablePtr oldStackable, StackablePtr newStackable)
     UdpLength(totalLength);
 
     // TODO Calculate checksum
+}
+
+void Udp::RegisterCallbacks()
+{
+    // TODO
 }
 } // namespace Packet

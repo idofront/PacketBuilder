@@ -1,8 +1,10 @@
 #ifndef PACKET_BUILDER__PACKET_BUILDER_HPP__
 #define PACKET_BUILDER__PACKET_BUILDER_HPP__
 
+#include <Absolute.hpp>
 #include <NotifyProperty.hpp>
 #include <Options.hpp>
+#include <PcapPacketHeader.hpp>
 #include <algorithm>
 #include <boost/format.hpp>
 #include <cmdline/cmdline.h>
@@ -77,6 +79,21 @@ inline void ValidateOptions(const Options &options)
 {
     std::vector<std::function<void(const Options &)>> validators = {ValidateOutputOption};
     std::for_each(validators.begin(), validators.end(), [&options](auto &validator) { validator(options); });
+}
+
+inline Packet::PcapPacketHeaderPtr CreatePcapPacketHeader(Packet::AbsolutePtr absolute)
+{
+    auto timestampNs = absolute->TimestampNs.Value();
+    auto timestampSeconds = std::chrono::duration_cast<std::chrono::seconds>(timestampNs);
+    auto timestampMicroseconds = std::chrono::duration_cast<std::chrono::microseconds>(timestampNs);
+
+    auto pcapPacketHeader = std::make_shared<Packet::PcapPacketHeader>();
+    pcapPacketHeader->TimestampSeconds.Value(timestampSeconds);
+    pcapPacketHeader->TimestampMicroseconds.Value(timestampMicroseconds - timestampSeconds);
+    pcapPacketHeader->IncludedLength.Value(0);
+    pcapPacketHeader->OriginalLength.Value(0);
+
+    return pcapPacketHeader;
 }
 
 #endif

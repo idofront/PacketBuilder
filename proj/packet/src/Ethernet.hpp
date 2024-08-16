@@ -15,16 +15,18 @@ class Ethernet : public Stackable
 {
   public:
     Ethernet();
+    Ethernet(PacketEntity::EthernetEntityPtr entity);
     virtual ~Ethernet();
 
-    Utility::NotifyProperty<uint8_t *> DestinationMac;
-    Utility::NotifyProperty<uint8_t *> SourceMac;
+    Utility::NotifyProperty<uint8_t *> DestinationMac; // TODO メモリ直利用を避ける
+    Utility::NotifyProperty<uint8_t *> SourceMac;      // TODO メモリ直利用を避ける
     Utility::NotifyProperty<uint16_t> EthernetType;
 
   private:
     static const std::size_t HeaderSize = 14;
     struct ether_header *Header() const;
     PacketEntity::EthernetEntityPtr Entity();
+    void RegisterCallbacks();
 };
 } // namespace Packet
 #endif

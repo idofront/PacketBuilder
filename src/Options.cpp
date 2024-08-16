@@ -28,22 +28,17 @@ Options::Options()
 
         if (std::filesystem::exists(newPath))
         {
-            auto msgfmt = boost::format("Output file: %1%") % newPath.string();
+            auto msgfmt = boost::format("The output file %1% is already exist. Overwrite it.") % newPath.string();
             SPDLOG_INFO(msgfmt.str());
-
-            auto extension = newPath.extension().string();
-            std::transform(extension.begin(), extension.end(), extension.begin(),
-                           [](unsigned char c) { return std::tolower(c); });
-
-            std::map<std::string, FileType> fileTypeMap = {{".pcap", FileType::Pcap}};
-            auto type = fileTypeMap.find(extension);
-            this->OutputFileType.Value(type == fileTypeMap.end() ? FileType::None : type->second);
         }
-        else
-        {
-            auto msgfmt = boost::format("Output file %1% does not exist") % newPath.string();
-            throw std::runtime_error(msgfmt.str());
-        }
+
+        auto extension = newPath.extension().string();
+        std::transform(extension.begin(), extension.end(), extension.begin(),
+                       [](unsigned char c) { return std::tolower(c); });
+
+        std::map<std::string, FileType> fileTypeMap = {{".pcap", FileType::Pcap}};
+        auto type = fileTypeMap.find(extension);
+        this->OutputFileType.Value(type == fileTypeMap.end() ? FileType::None : type->second);
     });
 
     OutputFileType.RegisterCallback([](FileType oldType, FileType newType) {

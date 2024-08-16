@@ -2,6 +2,7 @@
 #define PACKET_BUILDER__UDP_HPP__
 
 #include <Stackable.hpp>
+#include <UdpEntity.hpp>
 #include <netinet/udp.h>
 
 namespace Packet
@@ -13,6 +14,9 @@ class Udp : public Stackable
 {
   public:
     Udp();
+    Udp(PacketEntity::UdpEntityPtr entity);
+
+    // TODO to be notify property
     uint16_t SourcePort();
     void SourcePort(uint16_t sourcePort);
     uint16_t DestinationPort();
@@ -28,6 +32,7 @@ class Udp : public Stackable
   private:
     static const std::size_t HeaderSize = sizeof(struct udphdr);
     struct udphdr *UdpHeader();
+    void RegisterCallbacks();
 };
 } // namespace Packet
 

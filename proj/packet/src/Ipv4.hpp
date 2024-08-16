@@ -15,6 +15,7 @@ class Ipv4 : public Stackable
 {
   public:
     Ipv4();
+    Ipv4(PacketEntity::Ipv4EntityPtr entity);
 
     Utility::NotifyProperty<int> Version;
     Utility::NotifyProperty<int> Ihl;
@@ -38,6 +39,7 @@ class Ipv4 : public Stackable
     iphdr_t *Ipv4Header() const;
     static uint16_t CalculateChecksum(const Ipv4 *ipv4);
     PacketEntity::Ipv4EntityPtr Entity();
+    void RegisterCallbacks();
 };
 } // namespace Packet
 
