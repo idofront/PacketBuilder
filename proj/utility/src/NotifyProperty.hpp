@@ -5,6 +5,9 @@
 
 namespace Utility
 {
+/// @brief 値の変更通知を提供可能なプロパティ
+/// @tparam T 値の型
+/// @details 値が変化したかどうかによらず Value を Set されると Notify が呼ばれる．
 template <typename T> class NotifyProperty
 {
   public:
@@ -25,6 +28,8 @@ template <typename T> class NotifyProperty
         Notify(oldValue, value);
     }
 
+    /// @brief 値が変更されたときに呼ばれるコールバックを登録する．
+    /// @param callback コールバック
     void RegisterCallback(std::function<void(T, T)> callback)
     {
         _Callbacks.push_back(callback);

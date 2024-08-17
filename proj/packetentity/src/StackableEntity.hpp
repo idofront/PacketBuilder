@@ -10,7 +10,7 @@ namespace PacketEntity
 {
 class StackableEntity;
 using StackableEntityPtr = std::shared_ptr<StackableEntity>;
-
+/// @brief スタック可能なエンティティを表現する．
 class StackableEntity
 {
   public:
@@ -20,7 +20,6 @@ class StackableEntity
 
     virtual std::string ToString();
     virtual nlohmann::json ToJson() = 0;
-    static StackableEntityPtr FromJson(nlohmann::json json);
 };
 } // namespace PacketEntity
 

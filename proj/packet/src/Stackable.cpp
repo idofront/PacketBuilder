@@ -39,7 +39,7 @@ std::size_t Stackable::GetTotalLength(StackablePtr stackable)
 
 PacketEntity::StackableEntityPtr Stackable::StackableEntity()
 {
-    return this->_StackableEntity;
+    return this->_StackableEntity.Value();
 }
 
 void Stackable::CopyDataArray(StackablePtr stackable, StackablePtr dest, std::size_t offset)

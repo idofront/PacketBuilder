@@ -8,6 +8,7 @@
 
 namespace Packet
 {
+/// @brief パケット到着時刻を絶対時刻で表現する
 class Absolute;
 using AbsolutePtr = std::shared_ptr<Absolute>;
 class Absolute : public Stackable
@@ -18,6 +19,7 @@ class Absolute : public Stackable
     virtual ~Absolute();
 
   public:
+    /// @brief パケット到着時刻
     Utility::NotifyProperty<std::chrono::nanoseconds> TimestampNs;
 
   private:

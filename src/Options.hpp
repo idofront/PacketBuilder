@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
+/// @brief PacketBuilder が提供するコマンドライン引数を表す．
 class Options
 {
   public:

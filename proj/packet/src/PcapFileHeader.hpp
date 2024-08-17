@@ -8,7 +8,7 @@ namespace Packet
 {
 class PcapFileHeader;
 using PcapFileHeaderPtr = std::shared_ptr<PcapFileHeader>;
-
+/// @brief Pcapファイルヘッダを表現する．
 class PcapFileHeader : public Stackable
 {
   public:

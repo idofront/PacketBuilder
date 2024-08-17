@@ -55,6 +55,10 @@ Ipv4::Ipv4(PacketEntity::Ipv4EntityPtr entity)
     this->DestinationAddress.Value(dstSockaddrIn);
 }
 
+Ipv4::~Ipv4()
+{
+}
+
 struct iphdr *Ipv4::Ipv4Header() const
 {
     auto data_ptr = this->DataArray().get();

@@ -10,16 +10,26 @@ namespace Packet
 {
 class Udp;
 using UdpPtr = std::shared_ptr<Udp>;
-
+/// @brief UDP ヘッダを表現する．
 class Udp : public Stackable
 {
   public:
     Udp();
     Udp(PacketEntity::UdpEntityPtr entity);
+    virtual ~Udp();
 
+  public:
+    /// @brief ソースポートを設定/取得する．
     Utility::NotifyProperty<uint16_t> SourcePort;
+
+    /// @brief デスティネーションポートを設定/取得する．
     Utility::NotifyProperty<uint16_t> DestinationPort;
+
+    /// @brief UDP の長さを取得する．
+    /// @details UDP ヘッダの長さを含む．
     Utility::NotifyProperty<uint16_t> UdpLength;
+
+    /// @brief チェックサムを設定/取得する．
     Utility::NotifyProperty<uint16_t> UdpChecksum;
 
   protected:
