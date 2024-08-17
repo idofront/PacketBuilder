@@ -1,6 +1,12 @@
 # PacketBuilder
 
+PacketBuilder は任意のパケットを生成するためのヘルパーです．
+
+利用例として `./main/PacketBuilder.cpp` を用意しています．
+
 ## Build
+
+以下は Ubuntu でビルドする際のコマンドです．
 
 ```bash
 git submodule update --init --recursive
@@ -11,3 +17,15 @@ apt install \
     libboost-all-dev \
     libfmt-dev
 ```
+
+## Input Format
+
+以下の入力フォーマットに対応しています．
+
+- JSON
+
+## Output Format
+
+以下の出力フォーマットに対応しています．
+
+- PCAP (usec 精度)
