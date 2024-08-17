@@ -3,85 +3,19 @@
 
 namespace Packet
 {
-PcapFileHeader::PcapFileHeader() : Stackable(HeaderSize, std::make_shared<PacketEntity::PcapFileHeaderEntity>())
+PcapFileHeader::PcapFileHeader()
+    : Stackable(HeaderSize, std::make_shared<PacketEntity::PcapFileHeaderEntity>()), MagicNumber(0), VersionMajor(0),
+      VersionMinor(0), ThisZone(0), SigFigs(0), SnapLen(0), LinkType(0)
 {
-    this->MagicNumber(0xa1b2c3d4);
-    this->VersionMajor(2);
-    this->VersionMinor(4);
-    this->ThisZone(0);
-    this->SigFigs(0);
-    this->SnapLen(65535);
-    this->LinkType(1);
-}
+    RegisterCallbacks();
 
-uint32_t PcapFileHeader::MagicNumber() const
-{
-    return this->Header()->magic;
-}
-
-void PcapFileHeader::MagicNumber(uint32_t magicNumber)
-{
-    this->Header()->magic = magicNumber;
-}
-
-uint16_t PcapFileHeader::VersionMajor() const
-{
-    return this->Header()->version_major;
-}
-
-void PcapFileHeader::VersionMajor(uint16_t versionMajor)
-{
-    this->Header()->version_major = versionMajor;
-}
-
-uint16_t PcapFileHeader::VersionMinor() const
-{
-    return this->Header()->version_minor;
-}
-
-void PcapFileHeader::VersionMinor(uint16_t versionMinor)
-{
-    this->Header()->version_minor = versionMinor;
-}
-
-uint32_t PcapFileHeader::ThisZone() const
-{
-    return this->Header()->thiszone;
-}
-
-void PcapFileHeader::ThisZone(uint32_t thisZone)
-{
-    this->Header()->thiszone = thisZone;
-}
-
-uint32_t PcapFileHeader::SigFigs() const
-{
-    return this->Header()->sigfigs;
-}
-
-void PcapFileHeader::SigFigs(uint32_t sigFigs)
-{
-    this->Header()->sigfigs = sigFigs;
-}
-
-uint32_t PcapFileHeader::SnapLen() const
-{
-    return this->Header()->snaplen;
-}
-
-void PcapFileHeader::SnapLen(uint32_t snapLen)
-{
-    this->Header()->snaplen = snapLen;
-}
-
-uint32_t PcapFileHeader::LinkType() const
-{
-    return this->Header()->linktype;
-}
-
-void PcapFileHeader::LinkType(uint32_t linktype)
-{
-    this->Header()->linktype = linktype;
+    this->MagicNumber.Value(0xa1b2c3d4);
+    this->VersionMajor.Value(2);
+    this->VersionMinor.Value(4);
+    this->ThisZone.Value(0);
+    this->SigFigs.Value(0);
+    this->SnapLen.Value(65535);
+    this->LinkType.Value(1);
 }
 
 struct pcap_file_header *PcapFileHeader::Header() const
@@ -89,5 +23,69 @@ struct pcap_file_header *PcapFileHeader::Header() const
     auto data_ptr = this->DataArray().get();
     struct pcap_file_header *header = reinterpret_cast<struct pcap_file_header *>(data_ptr);
     return header;
+}
+
+PacketEntity::PcapFileHeaderEntityPtr PcapFileHeader::Entity()
+{
+    return std::dynamic_pointer_cast<PacketEntity::PcapFileHeaderEntity>(this->StackableEntity());
+}
+
+void PcapFileHeader::RegisterCallbacks()
+{
+    this->MagicNumber.RegisterCallback([this](uint32_t oldValue, uint32_t newValue) {
+        auto header = this->Header();
+        header->magic = newValue;
+
+        auto entity = this->Entity();
+        entity->MagicNumber = newValue;
+    });
+
+    this->VersionMajor.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto header = this->Header();
+        header->version_major = newValue;
+
+        auto entity = this->Entity();
+        entity->MajorVersion = newValue;
+    });
+
+    this->VersionMinor.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto header = this->Header();
+        header->version_minor = newValue;
+
+        auto entity = this->Entity();
+        entity->MinorVersion = newValue;
+    });
+
+    this->ThisZone.RegisterCallback([this](uint32_t oldValue, uint32_t newValue) {
+        auto header = this->Header();
+        header->thiszone = newValue;
+
+        auto entity = this->Entity();
+        entity->ThisZone = newValue;
+    });
+
+    this->SigFigs.RegisterCallback([this](uint32_t oldValue, uint32_t newValue) {
+        auto header = this->Header();
+        header->sigfigs = newValue;
+
+        auto entity = this->Entity();
+        entity->SigFigs = newValue;
+    });
+
+    this->SnapLen.RegisterCallback([this](uint32_t oldValue, uint32_t newValue) {
+        auto header = this->Header();
+        header->snaplen = newValue;
+
+        auto entity = this->Entity();
+        entity->SnapLen = newValue;
+    });
+
+    this->LinkType.RegisterCallback([this](uint32_t oldValue, uint32_t newValue) {
+        auto header = this->Header();
+        header->linktype = newValue;
+
+        auto entity = this->Entity();
+        entity->Network = newValue;
+    });
 }
 } // namespace Packet
