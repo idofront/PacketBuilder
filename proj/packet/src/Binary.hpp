@@ -8,6 +8,7 @@ namespace Packet
 {
 class Binary;
 using BinaryPtr = std::shared_ptr<Binary>;
+/// @brief バイナリデータを表現する．主にパケットのペイロードを表現するさいに使う．
 class Binary : public Stackable
 {
   public:

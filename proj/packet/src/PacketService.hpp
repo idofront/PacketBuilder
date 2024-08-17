@@ -17,9 +17,13 @@
 
 namespace Packet
 {
+/// @brief StackableEntity から Stackableを生成する
 class PacketService
 {
   public:
+    /// @brief StackableEntity から Stackableを生成する
+    /// @param entity StackableEntity
+    /// @return Stackable
     static StackablePtr StackableFromEntity(PacketEntity::StackableEntityPtr entity);
 };
 } // namespace Packet

@@ -10,6 +10,8 @@ using DataArrayPtr = std::shared_ptr<DataArray>;
 
 class BinaryEntity;
 using BinaryEntityPtr = std::shared_ptr<BinaryEntity>;
+/// @brief バイナリデータを表現する．
+/// @details 主にペイロード部を表現する．
 class BinaryEntity : public StackableEntity
 {
   public:
@@ -19,6 +21,7 @@ class BinaryEntity : public StackableEntity
     static StackableEntityPtr FromJson(nlohmann::json json);
 
   public:
+    /// @brief データ配列
     DataArrayPtr Data;
 };
 } // namespace PacketEntity

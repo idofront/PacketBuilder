@@ -3,12 +3,14 @@
 
 #include <string>
 
+/// @brief PacketBuilder が対応するファイル種別を表す．
 enum FileType
 {
     Pcap,
     None
 };
 
+/// @brief ファイル種別を文字列に変換する．
 inline std::string FileTypeToString(FileType fileType)
 {
     switch (fileType)

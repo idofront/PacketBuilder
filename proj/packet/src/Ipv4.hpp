@@ -10,24 +10,46 @@ namespace Packet
 {
 class Ipv4;
 using Ipv4Ptr = std::shared_ptr<Ipv4>;
-
+/// @brief IPv4ヘッダを表現する．
 class Ipv4 : public Stackable
 {
   public:
     Ipv4();
     Ipv4(PacketEntity::Ipv4EntityPtr entity);
+    ~Ipv4();
 
+  public:
+    /// @brief バージョン
     Utility::NotifyProperty<int> Version;
+
+    /// @brief ヘッダ長
     Utility::NotifyProperty<int> Ihl;
 
+    /// @brief サービスタイプ
     Utility::NotifyProperty<uint8_t> Tos;
+
+    /// @brief トータル長
     Utility::NotifyProperty<uint16_t> TotalLength;
+
+    /// @brief 識別子
     Utility::NotifyProperty<uint16_t> Id;
+
+    /// @brief フラグ
     Utility::NotifyProperty<uint16_t> Flags;
+
+    /// @brief フラグメントオフセット
     Utility::NotifyProperty<uint8_t> Ttl;
+
+    /// @brief プロトコル
     Utility::NotifyProperty<uint8_t> Protocol;
+
+    /// @brief チェックサム
     Utility::NotifyProperty<uint16_t> Checksum;
+
+    /// @brief 送信元アドレス
     Utility::NotifyProperty<sockaddr_in> SourceAddress;
+
+    /// @brief 宛先アドレス
     Utility::NotifyProperty<sockaddr_in> DestinationAddress;
 
   protected:

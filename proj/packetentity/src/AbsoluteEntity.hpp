@@ -7,6 +7,7 @@ namespace PacketEntity
 {
 class AbsoluteEntity;
 using AbsoluteEntityPtr = std::shared_ptr<AbsoluteEntity>;
+/// @brief キャプチャの絶対時間を表現する．
 class AbsoluteEntity : public StackableEntity
 {
   public:
@@ -16,6 +17,7 @@ class AbsoluteEntity : public StackableEntity
     static StackableEntityPtr FromJson(nlohmann::json json);
 
   public:
+    /// @brief タイムスタンプ
     uint64_t TimestampNs;
 };
 

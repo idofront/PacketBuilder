@@ -13,10 +13,18 @@
 
 namespace PacketEntity
 {
+/// @brief エンティティに対する操作を提供する．
 class EntityService
 {
   public:
+    /// @brief JSON からエンティティを生成する．
+    /// @param json JSON
+    /// @return エンティティ
     static StackableEntityPtr ParseEntity(nlohmann::json json);
+
+    /// @brief JSON (array) からエンティティの配列を生成する．
+    /// @param json JSON
+    /// @return エンティティの配列
     static std::vector<StackableEntityPtr> ParseEntities(nlohmann::json json);
 };
 } // namespace PacketEntity

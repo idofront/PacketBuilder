@@ -9,6 +9,8 @@
 
 namespace Packet
 {
+/// @brief Pcapパケットヘッダを表現する．
+/// @details 通常，struct pcap_pkthdr を利用するが，データ長 sizeof が正しく取得できないため，独自に定義する．
 struct RecordHeader
 {
     uint32_t timestampSeconds;
@@ -19,24 +21,29 @@ struct RecordHeader
 
 class PcapPacketHeader;
 using PcapPacketHeaderPtr = std::shared_ptr<PcapPacketHeader>;
-
+/// @brief Pcapパケットヘッダを表現する．
 class PcapPacketHeader : public Stackable
 {
   public:
     PcapPacketHeader();
 
+    /// @brief 時刻 (秒) を取得する．
     Utility::NotifyProperty<std::chrono::seconds> TimestampSeconds;
+
+    /// @brief 時刻 (マイクロ秒) を取得する．
     Utility::NotifyProperty<std::chrono::microseconds> TimestampMicroseconds;
+
+    /// @brief 収録データ長を取得する．
     Utility::NotifyProperty<uint32_t> IncludedLength;
+
+    /// @brief オリジナルデータ長を取得する．
     Utility::NotifyProperty<uint32_t> OriginalLength;
 
   protected:
     virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;
 
   private:
-    // static const std::size_t HeaderSize = sizeof(struct pcap_pkthdr);
     static const std::size_t HeaderSize = sizeof(struct RecordHeader);
-    // struct pcap_pkthdr *Header() const;
     struct RecordHeader *Header() const;
 
     PacketEntity::PcapPacketHeaderEntityPtr Entity();

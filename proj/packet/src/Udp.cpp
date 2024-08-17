@@ -28,6 +28,10 @@ Udp::Udp(PacketEntity::UdpEntityPtr entity)
     this->UdpChecksum.Value(entity->Checksum);
 }
 
+Udp::~Udp()
+{
+}
+
 struct udphdr *Udp::UdpHeader()
 {
     auto data_ptr = this->DataArray().get();
