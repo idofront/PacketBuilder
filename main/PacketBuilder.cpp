@@ -11,10 +11,12 @@
 #include <Stackable.hpp>
 #include <Udp.hpp>
 #include <arpa/inet.h>
+#include <boost/format.hpp>
 #include <cmdline/cmdline.h>
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <pcap.h>
 #include <spdlog/spdlog.h>
 
 int main(int argc, char **argv)
@@ -51,55 +53,23 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    if (options.OutputFileType.Value() == FileType::Pcap)
+    auto actions = std::map<FileType, std::function<void(void)>>{
+        {FileType::Pcap,
+         [&]() {
+             auto fmt = boost::format("Output to pcap file: %1%");
+             auto msg = fmt % options.OutputFilename.Value();
+             SPDLOG_INFO(msg.str());
+
+             SaveAsPcap(options.OutputFilename.Value(), stackables);
+         }},
+    };
+    auto actionItr = actions.find(options.OutputFileType.Value());
+    if (actionItr == actions.end())
     {
-        SPDLOG_DEBUG("Output to pcap file");
-        auto pcapFileHeader = Packet::PcapFileHeaderPtr(new Packet::PcapFileHeader());
-        SPDLOG_DEBUG("File Header: \n{}", Packet::Stackable::HexDump(pcapFileHeader));
-
-        std::for_each(stackables.begin(), stackables.end(), [&pcapFileHeader](Packet::StackablePtr stackable) {
-            if (stackable == nullptr)
-            {
-                throw std::runtime_error("The stackable is null.");
-            }
-
-            // Stackable が Absolute であることを検証する
-            auto absolute = std::dynamic_pointer_cast<Packet::Absolute>(stackable);
-            if (absolute == nullptr)
-            {
-                throw std::runtime_error("The stackable is not Absolute.");
-            }
-
-            // Absolute を PcapPacketHeader に変換する
-            auto pcapPacketHeader = CreatePcapPacketHeader(absolute);
-
-            // Absolute がもつ Stackable を取得する
-            auto stackableEntity = absolute->Stack.Value();
-            if (stackableEntity == nullptr)
-            {
-                throw std::runtime_error("The stackable entity is null.");
-            }
-
-            pcapPacketHeader->Stack.Value(stackableEntity);
-
-            auto tail = Packet::Stackable::Tail(pcapFileHeader);
-            tail->Stack.Value(pcapPacketHeader);
-            SPDLOG_DEBUG("Packet Header: \n{}", Packet::Stackable::HexDump(pcapPacketHeader));
-        });
-
-        auto json = pcapFileHeader->StackableEntity()->ToJson();
-        SPDLOG_DEBUG("\n{}", json.dump(4));
-
-        std::ofstream fs(options.OutputFilename.Value(), std::ios::out | std::ios::binary);
-        auto composed = Packet::Stackable::Compose(pcapFileHeader);
-
-        auto dump = Packet::Stackable::HexDump(composed);
-        SPDLOG_TRACE("Dump: \n{}", dump);
-
-        auto ptr = (const char *)composed->DataArray().get();
-        fs.write(ptr, composed->Length());
-        fs.close();
+        SPDLOG_ERROR("Invalid output file type");
+        return 1;
     }
+    actionItr->second();
 
     return 0;
 }

@@ -32,6 +32,16 @@ include_directories(${fmt_INCLUDE_DIRS})
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
+# libpcap の設定
+find_path(PCAP_INCLUDE_DIR pcap.h)
+find_library(PCAP_LIBRARY pcap)
+
+if(NOT PCAP_INCLUDE_DIR OR NOT PCAP_LIBRARY)
+  message(FATAL_ERROR "libpcap not found. Please install libpcap.")
+endif()
+
+include_directories(${PCAP_INCLUDE_DIR})
+
 # include ディレクトリを追加
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/submodules)
@@ -52,7 +62,7 @@ foreach(MAIN_SOURCE ${MAIN_SOURCES})
   get_filename_component(MAIN_NAME ${MAIN_SOURCE} NAME_WE)
   add_executable(${MAIN_NAME} ${MAIN_SOURCE} $<TARGET_OBJECTS:Builder>)
   target_include_directories(${MAIN_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src ${fmt_INCLUDE_DIRS})
-  target_link_libraries(${MAIN_NAME} ${subproject_names} fmt::fmt)
+  target_link_libraries(${MAIN_NAME} ${subproject_names} fmt::fmt ${PCAP_LIBRARY})
   set_target_properties(${MAIN_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 endforeach()
 
@@ -64,7 +74,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
   get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
   add_executable(${TEST_NAME} ${TEST_SOURCE} $<TARGET_OBJECTS:Builder>)
   target_include_directories(${TEST_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src ${fmt_INCLUDE_DIRS})
-  target_link_libraries(${TEST_NAME} ${subproject_names} fmt::fmt GTest::GTest GTest::Main)
+  target_link_libraries(${TEST_NAME} ${subproject_names} fmt::fmt GTest::GTest GTest::Main ${PCAP_LIBRARY})
   add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
   set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/test)
 endforeach()

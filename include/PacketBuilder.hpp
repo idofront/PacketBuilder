@@ -114,4 +114,70 @@ inline Packet::PcapPacketHeaderPtr CreatePcapPacketHeader(Packet::AbsolutePtr ab
     return pcapPacketHeader;
 }
 
+/// @brief パケットを pcap ファイルに保存する．
+/// @param outputPath 保存先のパス
+/// @param packets 保存するパケット
+inline void SaveAsPcap(std::filesystem::path outputPath, std::vector<Packet::StackablePtr> packets)
+{
+    pcap_t *handle;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_dumper_t *dumper;
+
+    handle = pcap_open_dead(DLT_EN10MB, 65535);
+    if (!handle)
+    {
+        throw std::runtime_error("pcap_open_dead failed");
+    }
+
+    dumper = pcap_dump_open(handle, outputPath.c_str());
+    if (!dumper)
+    {
+        auto fmt = boost::format("pcap_dump_open failed: %1%");
+        auto msg = fmt % pcap_geterr(handle);
+        throw std::runtime_error(msg.str());
+    }
+
+    for (auto stackable : packets)
+    {
+        if (stackable == nullptr)
+        {
+            SPDLOG_WARN("The stackable is null.");
+            continue;
+        }
+
+        // Stackable が Absolute であることを検証する
+        auto absolute = std::dynamic_pointer_cast<Packet::Absolute>(stackable);
+        if (absolute == nullptr)
+        {
+            SPDLOG_WARN("The stackable is not Absolute.");
+            continue;
+        }
+
+        // Absolute を PcapPacketHeader に変換する
+        auto pcapPacketHeader = CreatePcapPacketHeader(absolute);
+
+        // Absolute がもつ Stackable を取得する
+        auto stackableEntity = absolute->Stack.Value();
+        if (stackableEntity == nullptr)
+        {
+            SPDLOG_WARN("The stackable entity is null.");
+            continue;
+        }
+        auto composed = Packet::Stackable::Compose(stackableEntity);
+
+        pcap_pkthdr header;
+        header.len = composed->Length();
+        header.caplen = composed->Length();
+        auto seconds = std::chrono::duration_cast<std::chrono::seconds>(absolute->TimestampNs.Value());
+        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(absolute->TimestampNs.Value());
+        header.ts.tv_sec = seconds.count();
+        header.ts.tv_usec = (microseconds - seconds).count();
+
+        pcap_dump(reinterpret_cast<u_char *>(dumper), &header, composed->DataArray().get());
+    }
+
+    pcap_dump_close(dumper);
+    pcap_close(handle);
+}
+
 #endif
