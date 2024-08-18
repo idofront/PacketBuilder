@@ -1,4 +1,5 @@
 #include <BinaryEntity.hpp>
+#include <Utility.hpp>
 #include <spdlog/spdlog.h>
 
 namespace PacketEntity
@@ -20,7 +21,8 @@ nlohmann::json BinaryEntity::ToJson()
 
 StackableEntityPtr BinaryEntity::FromJson(nlohmann::json json)
 {
-    auto length = json["Data"].size();
+    auto array = Utility::ParseJsonObjectHelper<DataArray>(json, "Data", DataArray());
+    auto length = array.size();
 
     auto entity = std::make_shared<BinaryEntity>(length);
 
