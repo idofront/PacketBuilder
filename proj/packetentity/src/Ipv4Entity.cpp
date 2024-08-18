@@ -1,4 +1,5 @@
 #include <Ipv4Entity.hpp>
+#include <Utility.hpp>
 #include <spdlog/spdlog.h>
 
 namespace PacketEntity
@@ -34,20 +35,46 @@ StackableEntityPtr Ipv4Entity::FromJson(nlohmann::json json)
 {
     auto entity = std::make_shared<Ipv4Entity>();
 
-    entity->Version = json["Version"].get_to(entity->Version);
-    entity->IHL = json["IHL"].get_to(entity->IHL);
-    entity->DSCP = json["DSCP"].get_to(entity->DSCP);
-    entity->ECN = json["ECN"].get_to(entity->ECN);
-    entity->TotalLength = json["TotalLength"].get_to(entity->TotalLength);
-    entity->Identification = json["Identification"].get_to(entity->Identification);
-    entity->Flags = json["Flags"].get_to(entity->Flags);
-    entity->FragmentOffset = json["FragmentOffset"].get_to(entity->FragmentOffset);
-    entity->TTL = json["TTL"].get_to(entity->TTL);
-    entity->Protocol = json["Protocol"].get_to(entity->Protocol);
-    entity->HeaderChecksum = json["HeaderChecksum"].get_to(entity->HeaderChecksum);
-    entity->SourceAddress = json["SourceAddress"].get_to(entity->SourceAddress);
-    entity->DestinationAddress = json["DestinationAddress"].get_to(entity->DestinationAddress);
-
+    try
+    {
+        entity->Version = Utility::ParseJsonObjectHelper<uint8_t>(json, "Version", 4, [](auto value) {
+            if (value != 4)
+            {
+                // validation 機能を流用して期待しない値が入っている場合は警告する．
+                auto fmt = boost::format("An unexpected version: %1%");
+                auto msg = boost::str(fmt % std::uint16_t(value));
+                SPDLOG_WARN(msg);
+            }
+            return true;
+        });
+        entity->IHL = Utility::ParseJsonObjectHelper<uint8_t>(json, "IHL", 5, [](auto value) {
+            if (value != 5)
+            {
+                // TODO IHL が 5 以外の場合の処理を追加する．
+                auto fmt = boost::format("An unsupported IHL: %1%");
+                auto msg = boost::str(fmt % std::uint16_t(value));
+                SPDLOG_WARN(msg);
+            }
+            return value == 5;
+        });
+        entity->DSCP = Utility::ParseJsonObjectHelper<uint8_t>(json, "DSCP", 0);
+        entity->ECN = Utility::ParseJsonObjectHelper<uint16_t>(json, "ECN", 0);
+        entity->TotalLength = Utility::ParseJsonObjectHelper<uint16_t>(json, "TotalLength", 0);
+        entity->Identification = Utility::ParseJsonObjectHelper<uint16_t>(json, "Identification", 0);
+        entity->Flags = Utility::ParseJsonObjectHelper<uint16_t>(json, "Flags", 0);
+        entity->FragmentOffset = Utility::ParseJsonObjectHelper<uint16_t>(json, "FragmentOffset", 0);
+        entity->TTL = Utility::ParseJsonObjectHelper<uint8_t>(json, "TTL", 0);
+        entity->Protocol = Utility::ParseJsonObjectHelper<uint8_t>(json, "Protocol", 0);
+        entity->HeaderChecksum = Utility::ParseJsonObjectHelper<uint16_t>(json, "HeaderChecksum", 0);
+        entity->SourceAddress = Utility::ParseJsonObjectHelper<uint32_t>(json, "SourceAddress", 0);
+        entity->DestinationAddress = Utility::ParseJsonObjectHelper<uint32_t>(json, "DestinationAddress", 0);
+    }
+    catch (const std::exception &e)
+    {
+        auto fmt = boost::format("Failed to parse json object: %1%");
+        auto msg = boost::str(fmt % e.what());
+        throw std::runtime_error(msg);
+    }
     return entity;
 }
 } // namespace PacketEntity

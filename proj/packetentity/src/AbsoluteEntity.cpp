@@ -1,4 +1,5 @@
 #include <AbsoluteEntity.hpp>
+#include <Utility.hpp>
 
 namespace PacketEntity
 {
@@ -21,7 +22,7 @@ StackableEntityPtr AbsoluteEntity::FromJson(nlohmann::json json)
 {
     auto entity = std::make_shared<AbsoluteEntity>();
 
-    entity->TimestampNs = json["TimestampNs"];
+    entity->TimestampNs = Utility::ParseJsonObjectHelper<uint64_t>(json, "TimestampNs", 0);
 
     return entity;
 }

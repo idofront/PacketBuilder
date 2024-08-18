@@ -1,4 +1,5 @@
 #include <UdpEntity.hpp>
+#include <Utility.hpp>
 #include <spdlog/spdlog.h>
 
 namespace PacketEntity
@@ -25,10 +26,10 @@ StackableEntityPtr UdpEntity::FromJson(nlohmann::json json)
 {
     auto entity = std::make_shared<UdpEntity>();
 
-    entity->SourcePort = json["SourcePort"];
-    entity->DestinationPort = json["DestinationPort"];
-    entity->Length = json["Length"];
-    entity->Checksum = json["Checksum"];
+    entity->SourcePort = Utility::ParseJsonObjectHelper<uint16_t>(json, "SourcePort", 0);
+    entity->DestinationPort = Utility::ParseJsonObjectHelper<uint16_t>(json, "DestinationPort", 0);
+    entity->Length = Utility::ParseJsonObjectHelper<uint16_t>(json, "Length", 0);
+    entity->Checksum = Utility::ParseJsonObjectHelper<uint16_t>(json, "Checksum", 0);
 
     return entity;
 }

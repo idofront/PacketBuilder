@@ -1,5 +1,6 @@
 #include <EthernetEntity.hpp>
-#include <spdlog/spdlog.h>
+#include <Utility.hpp>
+#include <net/ethernet.h>
 
 namespace PacketEntity
 {
@@ -23,9 +24,9 @@ nlohmann::json EthernetEntity::ToJson()
 StackableEntityPtr EthernetEntity::FromJson(nlohmann::json json)
 {
     auto entity = std::make_shared<EthernetEntity>();
-    entity->DestinationMac = json["DestinationMac"];
-    entity->SourceMac = json["SourceMac"];
-    entity->Type = json["Type"];
+    entity->DestinationMac = Utility::ParseJsonObjectHelper<std::string>(json, "DestinationMac", "");
+    entity->SourceMac = Utility::ParseJsonObjectHelper<std::string>(json, "SourceMac", "");
+    entity->Type = Utility::ParseJsonObjectHelper<uint16_t>(json, "Type", ETHERTYPE_IP);
     return entity;
 }
 } // namespace PacketEntity

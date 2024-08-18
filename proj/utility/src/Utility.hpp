@@ -3,12 +3,16 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
+#include <boost/format.hpp>
 #include <cstdint>
 #include <cxxabi.h>
 #include <memory>
+#include <nlohmann/json.hpp>
+#include <optional>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <string>
+#include <typeindex>
 
 namespace Utility
 {
@@ -36,6 +40,63 @@ void EthernetAddressToString(std::string &addr, const uint8_t *const ether_addr)
 /// @param ether_addr 変換後の Ethernet アドレス
 void EthernetAddressFromString(const std::string &addr, uint8_t *const ether_addr);
 
+/// @brief JSON オブジェクトから指定したキーの値を取得する．
+template <class T>
+T ParseJsonObjectHelper(nlohmann::json &json, const std::string &key, std::optional<T> default_value = std::nullopt,
+                        std::function<bool(T)> validator = nullptr)
+{
+    if (!json.is_object())
+    {
+        throw std::runtime_error("The json object is not an object.");
+    }
+
+    if (json.find(key) == json.end())
+    {
+        if (default_value.has_value())
+        {
+            SPDLOG_WARN("The key is not found in json object: {}", key);
+            return default_value.value();
+        }
+        else
+        {
+            auto fmt = boost::format("The key '%1%' is not found and no default value is set.");
+            auto msg = fmt % key;
+            throw std::runtime_error(msg.str());
+        }
+    }
+
+    try
+    {
+        auto value = json[key].get<T>();
+        if (validator != nullptr && !validator(value))
+        {
+            auto fmt = boost::format("Validation failed.");
+            throw std::runtime_error(fmt.str());
+        }
+
+        return value;
+    }
+    catch (const nlohmann::json::type_error &e)
+    {
+        // key を取得できたが型が異なる場合
+        SPDLOG_WARN("Failed to parse json object: {}", e.what());
+
+        if (default_value.has_value())
+        {
+            auto fmt = boost::format("The key '%1%' is found but invalid type. Return default value.");
+            auto msg = fmt % key;
+            SPDLOG_WARN(msg.str());
+
+            return default_value.value();
+        }
+        else
+        {
+            auto fmt = boost::format("The key '%1%' is found but invalid type and no default value is set.");
+            auto msg = fmt % key;
+            throw std::runtime_error(msg.str());
+        }
+    }
+}
 } // namespace Utility
 
 #endif
