@@ -42,7 +42,7 @@ void EthernetAddressFromString(const std::string &addr, uint8_t *const ether_add
 
 /// @brief JSON オブジェクトから指定したキーの値を取得する．
 template <class T>
-T ParseJsonObjectHelper(nlohmann::json &json, const std::string &key, T default_value,
+T ParseJsonObjectHelper(nlohmann::json &json, const std::string &key, std::optional<T> default_value = std::nullopt,
                         std::function<bool(T)> validator = nullptr)
 {
     if (!json.is_object())
@@ -52,8 +52,17 @@ T ParseJsonObjectHelper(nlohmann::json &json, const std::string &key, T default_
 
     if (json.find(key) == json.end())
     {
-        SPDLOG_WARN("The key is not found in json object: {}", key);
-        return default_value;
+        if (default_value.has_value())
+        {
+            SPDLOG_WARN("The key is not found in json object: {}", key);
+            return default_value.value();
+        }
+        else
+        {
+            auto fmt = boost::format("The key '%1%' is not found and no default value is set.");
+            auto msg = fmt % key;
+            throw std::runtime_error(msg.str());
+        }
     }
 
     try
@@ -71,11 +80,21 @@ T ParseJsonObjectHelper(nlohmann::json &json, const std::string &key, T default_
     {
         // key を取得できたが型が異なる場合
         SPDLOG_WARN("Failed to parse json object: {}", e.what());
-        auto fmt = boost::format("The key '%1%' is found but invalid type. Return default value.");
-        auto msg = fmt % key;
-        SPDLOG_WARN(msg.str());
 
-        return default_value;
+        if (default_value.has_value())
+        {
+            auto fmt = boost::format("The key '%1%' is found but invalid type. Return default value.");
+            auto msg = fmt % key;
+            SPDLOG_WARN(msg.str());
+
+            return default_value.value();
+        }
+        else
+        {
+            auto fmt = boost::format("The key '%1%' is found but invalid type and no default value is set.");
+            auto msg = fmt % key;
+            throw std::runtime_error(msg.str());
+        }
     }
 }
 } // namespace Utility
