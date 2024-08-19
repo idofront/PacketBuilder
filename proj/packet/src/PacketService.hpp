@@ -10,6 +10,7 @@
 #include <Ipv4.hpp>
 #include <Ipv4Entity.hpp>
 #include <StackableEntity.hpp>
+#include <StackableFactory.hpp>
 #include <Udp.hpp>
 #include <UdpEntity.hpp>
 #include <Utility.hpp>
@@ -25,6 +26,11 @@ class PacketService
     /// @param entity StackableEntity
     /// @return Stackable
     static StackablePtr StackableFromEntity(PacketEntity::StackableEntityPtr entity);
+
+    static StackableFactoryPtr GetStackableFactory(PacketEntity::StackableEntityPtr entity);
+
+  private:
+    static std::map<std::string, StackableFactoryPtr> StackableFactories;
 };
 } // namespace Packet
 
