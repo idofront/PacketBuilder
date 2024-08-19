@@ -1,48 +1,17 @@
+#include <AbsoluteFactory.hpp>
+#include <BinaryFactory.hpp>
+#include <EthernetFactory.hpp>
+#include <Ipv4Factory.hpp>
 #include <PacketService.hpp>
+#include <UdpFactory.hpp>
 
 namespace Packet
 {
 StackablePtr PacketService::StackableFromEntity(PacketEntity::StackableEntityPtr entity)
 {
-    auto type = typeid(*entity).name();
-    auto demangledType = Utility::Demangle(type);
+    auto stackableFactory = GetStackableFactory(entity);
+    auto stackable = stackableFactory->Get(entity);
 
-    auto typeMap = std::map<std::string, std::function<StackablePtr()>>{
-        {Utility::Demangle(typeid(PacketEntity::AbsoluteEntity).name()),
-         [&entity]() {
-             auto entityPtr = std::dynamic_pointer_cast<PacketEntity::AbsoluteEntity>(entity);
-             return std::make_shared<Absolute>(entityPtr);
-         }},
-        {Utility::Demangle(typeid(PacketEntity::BinaryEntity).name()),
-         [&entity]() {
-             auto entityPtr = std::dynamic_pointer_cast<PacketEntity::BinaryEntity>(entity);
-             return std::make_shared<Binary>(entityPtr);
-         }},
-        {Utility::Demangle(typeid(PacketEntity::EthernetEntity).name()),
-         [&entity]() {
-             auto entityPtr = std::dynamic_pointer_cast<PacketEntity::EthernetEntity>(entity);
-             return std::make_shared<Ethernet>(entityPtr);
-         }},
-        {Utility::Demangle(typeid(PacketEntity::Ipv4Entity).name()),
-         [&entity]() {
-             auto entityPtr = std::dynamic_pointer_cast<PacketEntity::Ipv4Entity>(entity);
-             return std::make_shared<Ipv4>(entityPtr);
-         }},
-        {Utility::Demangle(typeid(PacketEntity::UdpEntity).name()),
-         [&entity]() {
-             auto entityPtr = std::dynamic_pointer_cast<PacketEntity::UdpEntity>(entity);
-             return std::make_shared<Udp>(entityPtr);
-         }},
-    };
-    auto factory = typeMap.find(demangledType);
-    if (factory == typeMap.end())
-    {
-        auto fmt = boost::format("Unknown entity type: %1%");
-        auto msg = boost::str(fmt % demangledType);
-        throw std::runtime_error(msg);
-    }
-
-    auto stackable = factory->second();
     auto stackedEntity = entity->Stack.Value();
     if (stackedEntity)
     {
@@ -64,4 +33,28 @@ StackablePtr PacketService::StackableFromEntity(PacketEntity::StackableEntityPtr
 
     return stackable;
 }
+
+StackableFactoryPtr PacketService::GetStackableFactory(PacketEntity::StackableEntityPtr entity)
+{
+    auto type = typeid(*entity).name();
+    auto demangledType = Utility::Demangle(type);
+
+    auto factory = StackableFactories.find(demangledType);
+    if (factory == StackableFactories.end())
+    {
+        auto fmt = boost::format("Unknown entity type: %1%");
+        auto msg = boost::str(fmt % demangledType);
+        throw std::runtime_error(msg);
+    }
+
+    auto stackableFactoryPtr = factory->second;
+    return stackableFactoryPtr;
+}
+
+std::map<std::string, StackableFactoryPtr> PacketService::StackableFactories = {
+    {Utility::Demangle(typeid(PacketEntity::AbsoluteEntity).name()), std::make_shared<AbsoluteFactory>()},
+    {Utility::Demangle(typeid(PacketEntity::BinaryEntity).name()), std::make_shared<BinaryFactory>()},
+    {Utility::Demangle(typeid(PacketEntity::EthernetEntity).name()), std::make_shared<EthernetFactory>()},
+    {Utility::Demangle(typeid(PacketEntity::Ipv4Entity).name()), std::make_shared<Ipv4Factory>()},
+    {Utility::Demangle(typeid(PacketEntity::UdpEntity).name()), std::make_shared<UdpFactory>()}};
 } // namespace Packet
