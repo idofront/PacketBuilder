@@ -1,5 +1,6 @@
 #include <StackableEntity.hpp>
 #include <Utility.hpp>
+#include <nameof/nameof.h>
 
 namespace PacketEntity
 {
@@ -19,17 +20,25 @@ std::string StackableEntity::ToString()
 
 nlohmann::json StackableEntity::ToJson()
 {
+    auto typeName = typeid(*this).name();
+    auto demangledName = Utility::Demangle(typeName);
+
     auto json = nlohmann::json();
 
     if (this->Stack.Value())
     {
-        json["Stack"] = this->Stack.Value()->ToJson();
+        json[nameof(this->Stack)] = this->Stack.Value()->ToJson();
     }
 
-    auto typeName = typeid(*this).name();
-    auto demangledName = Utility::Demangle(typeName);
-    json["EntityType"] = demangledName;
+    json["EntityType"] = this->EntityType();
 
     return json;
+}
+
+std::string StackableEntity::EntityType()
+{
+    auto typeName = typeid(*this).name();
+    auto demangledName = Utility::Demangle(typeName);
+    return demangledName;
 }
 } // namespace PacketEntity

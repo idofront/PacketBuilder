@@ -1,5 +1,6 @@
 #include <Ipv4Entity.hpp>
 #include <Utility.hpp>
+#include <nameof/nameof.h>
 #include <spdlog/spdlog.h>
 
 namespace PacketEntity
@@ -37,7 +38,7 @@ StackableEntityPtr Ipv4Entity::FromJson(nlohmann::json json)
 
     try
     {
-        entity->Version = Utility::ParseJsonObjectHelper<uint8_t>(json, "Version", 4, [](auto value) {
+        entity->Version = Utility::ParseJsonObjectHelper<uint8_t>(json, nameof(entity->Version), 4, [](auto value) {
             if (value != 4)
             {
                 // validation 機能を流用して期待しない値が入っている場合は警告する．
@@ -47,7 +48,7 @@ StackableEntityPtr Ipv4Entity::FromJson(nlohmann::json json)
             }
             return true;
         });
-        entity->IHL = Utility::ParseJsonObjectHelper<uint8_t>(json, "IHL", 5, [](auto value) {
+        entity->IHL = Utility::ParseJsonObjectHelper<uint8_t>(json, nameof(entity->IHL), 5, [](auto value) {
             if (value != 5)
             {
                 // TODO IHL が 5 以外の場合の処理を追加する．
@@ -57,17 +58,19 @@ StackableEntityPtr Ipv4Entity::FromJson(nlohmann::json json)
             }
             return value == 5;
         });
-        entity->DSCP = Utility::ParseJsonObjectHelper<uint8_t>(json, "DSCP", 0);
-        entity->ECN = Utility::ParseJsonObjectHelper<uint16_t>(json, "ECN", 0);
-        entity->TotalLength = Utility::ParseJsonObjectHelper<uint16_t>(json, "TotalLength", 0);
-        entity->Identification = Utility::ParseJsonObjectHelper<uint16_t>(json, "Identification", 0);
-        entity->Flags = Utility::ParseJsonObjectHelper<uint16_t>(json, "Flags", 0);
-        entity->FragmentOffset = Utility::ParseJsonObjectHelper<uint16_t>(json, "FragmentOffset", 0);
-        entity->TTL = Utility::ParseJsonObjectHelper<uint8_t>(json, "TTL", 0);
-        entity->Protocol = Utility::ParseJsonObjectHelper<uint8_t>(json, "Protocol", 0);
-        entity->HeaderChecksum = Utility::ParseJsonObjectHelper<uint16_t>(json, "HeaderChecksum", 0);
-        entity->SourceAddress = Utility::ParseJsonObjectHelper<uint32_t>(json, "SourceAddress", 0);
-        entity->DestinationAddress = Utility::ParseJsonObjectHelper<uint32_t>(json, "DestinationAddress", 0);
+        entity->DSCP = Utility::ParseJsonObjectHelper<uint8_t>(json, nameof(entity->DSCP), 0);
+        entity->ECN = Utility::ParseJsonObjectHelper<uint16_t>(json, nameof(entity->ECN), 0);
+        entity->TotalLength = Utility::ParseJsonObjectHelper<uint16_t>(json, nameof(entity->TotalLength), 0);
+        entity->Identification = Utility::ParseJsonObjectHelper<uint16_t>(json, nameof(entity->Identification), 0);
+        entity->Flags = Utility::ParseJsonObjectHelper<uint16_t>(json, nameof(entity->Flags), 0);
+        entity->FragmentOffset = Utility::ParseJsonObjectHelper<uint16_t>(json, nameof(entity->FragmentOffset), 0);
+        entity->TTL = Utility::ParseJsonObjectHelper<uint8_t>(json, nameof(entity->TTL), 0);
+        entity->Protocol = Utility::ParseJsonObjectHelper<uint8_t>(json, nameof(entity->Protocol), 0);
+        entity->HeaderChecksum = Utility::ParseJsonObjectHelper<uint16_t>(json, nameof(entity->HeaderChecksum), 0);
+        entity->SourceAddress =
+            Utility::ParseJsonObjectHelper<std::string>(json, nameof(entity->SourceAddress), std::nullopt);
+        entity->DestinationAddress =
+            Utility::ParseJsonObjectHelper<std::string>(json, nameof(entity->DestinationAddress), std::nullopt);
     }
     catch (const std::exception &e)
     {

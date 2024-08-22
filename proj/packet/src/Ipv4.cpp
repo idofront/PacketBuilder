@@ -47,11 +47,11 @@ Ipv4::Ipv4(PacketEntity::Ipv4EntityPtr entity)
     this->Checksum.Value(entity->HeaderChecksum);
 
     auto srcSockaddrIn = sockaddr_in();
-    srcSockaddrIn.sin_addr.s_addr = htonl(entity->SourceAddress);
+    inet_aton(entity->SourceAddress.c_str(), &srcSockaddrIn.sin_addr);
     this->SourceAddress.Value(srcSockaddrIn);
 
     auto dstSockaddrIn = sockaddr_in();
-    dstSockaddrIn.sin_addr.s_addr = htonl(entity->DestinationAddress);
+    inet_aton(entity->DestinationAddress.c_str(), &dstSockaddrIn.sin_addr);
     this->DestinationAddress.Value(dstSockaddrIn);
 }
 
@@ -187,19 +187,13 @@ void Ipv4::RegisterCallbacks()
     });
 
     this->SourceAddress.RegisterCallback([this](sockaddr_in oldValue, sockaddr_in newValue) {
-        auto data = this->DataArray().get();
-        auto header = this->Ipv4Header();
-        header->saddr = newValue.sin_addr.s_addr;
-
-        Entity()->SourceAddress = ntohl(newValue.sin_addr.s_addr);
+        // Entity はメモリを確保済みのはず。
+        inet_ntop(AF_INET, &(newValue.sin_addr), Entity()->SourceAddress.data(), INET_ADDRSTRLEN);
     });
 
     this->DestinationAddress.RegisterCallback([this](sockaddr_in oldValue, sockaddr_in newValue) {
-        auto data = this->DataArray().get();
-        auto header = this->Ipv4Header();
-        header->daddr = newValue.sin_addr.s_addr;
-
-        Entity()->DestinationAddress = ntohl(newValue.sin_addr.s_addr);
+        // Entity はメモリを確保済みのはず。
+        inet_ntop(AF_INET, &(newValue.sin_addr), Entity()->DestinationAddress.data(), INET_ADDRSTRLEN);
     });
 }
 } // namespace Packet

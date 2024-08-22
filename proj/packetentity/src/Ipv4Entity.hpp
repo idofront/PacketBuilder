@@ -50,10 +50,10 @@ class Ipv4Entity : public StackableEntity
     uint16_t HeaderChecksum;
 
     /// @brief 送信元 IP アドレス
-    uint32_t SourceAddress;
+    std::string SourceAddress;
 
     /// @brief 宛先 IP アドレス
-    uint32_t DestinationAddress;
+    std::string DestinationAddress;
 };
 } // namespace PacketEntity
 
