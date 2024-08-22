@@ -8,6 +8,9 @@ file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 # utility ライブラリを追加
 include_directories(${PROJECT_SOURCE_DIR}/../utility/src)
 
+# utility ライブラリを追加
+include_directories(${PROJECT_SOURCE_DIR}/../../submodules)
+
 # ライブラリを生成
 add_library(packetentity STATIC ${SRC_FILES})
 
@@ -15,4 +18,3 @@ add_library(packetentity STATIC ${SRC_FILES})
 set_target_properties(packetentity PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
-

@@ -1,3 +1,6 @@
 [submodule "submodules/cmdline"]
 	path = submodules/cmdline
 	url = https://github.com/tanakh/cmdline.git
+[submodule "submodules/nameof"]
+	path = submodules/nameof
+	url = https://github.com/bravikov/nameof.git

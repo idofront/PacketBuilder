@@ -5,7 +5,7 @@
             "name": "PacketBiulder",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/PacketBuilder",
+            "program": "${workspaceFolder}/build/PacketBuilder",
             "args": [
                 "-l",
                 "debug",

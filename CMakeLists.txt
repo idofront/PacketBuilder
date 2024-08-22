@@ -63,11 +63,10 @@ foreach(MAIN_SOURCE ${MAIN_SOURCES})
   add_executable(${MAIN_NAME} ${MAIN_SOURCE} $<TARGET_OBJECTS:Builder>)
   target_include_directories(${MAIN_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src ${fmt_INCLUDE_DIRS})
   target_link_libraries(${MAIN_NAME} ${subproject_names} fmt::fmt ${PCAP_LIBRARY})
-  set_target_properties(${MAIN_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 endforeach()
 
 # テストディレクトリの cpp ファイルを取得
-file(GLOB TEST_SOURCES "test/*.cpp")
+file(GLOB TEST_SOURCES "test/**/*.cpp")
 
 # 各テストソースファイルごとにテストターゲットを生成
 foreach(TEST_SOURCE ${TEST_SOURCES})
@@ -76,7 +75,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
   target_include_directories(${TEST_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src ${fmt_INCLUDE_DIRS})
   target_link_libraries(${TEST_NAME} ${subproject_names} fmt::fmt GTest::GTest GTest::Main ${PCAP_LIBRARY})
   add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
-  set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/test)
+  set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
 endforeach()
 
 # CTest の有効化
