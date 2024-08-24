@@ -1,7 +1,7 @@
 #ifndef PACKET_BUILDER__PCAP_PACKET_HEADER_HPP__
 #define PACKET_BUILDER__PCAP_PACKET_HEADER_HPP__
 
-#include <NotifyProperty.hpp>
+#include <ObservableProperty.hpp>
 #include <PcapPacketHeaderEntity.hpp>
 #include <Stackable.hpp>
 #include <chrono>
@@ -28,16 +28,16 @@ class PcapPacketHeader : public Stackable
     PcapPacketHeader();
 
     /// @brief 時刻 (秒) を取得する．
-    Utility::NotifyProperty<std::chrono::seconds> TimestampSeconds;
+    Utility::ObservableProperty<std::chrono::seconds> TimestampSeconds;
 
     /// @brief 時刻 (マイクロ秒) を取得する．
-    Utility::NotifyProperty<std::chrono::microseconds> TimestampMicroseconds;
+    Utility::ObservableProperty<std::chrono::microseconds> TimestampMicroseconds;
 
     /// @brief 収録データ長を取得する．
-    Utility::NotifyProperty<uint32_t> IncludedLength;
+    Utility::ObservableProperty<uint32_t> IncludedLength;
 
     /// @brief オリジナルデータ長を取得する．
-    Utility::NotifyProperty<uint32_t> OriginalLength;
+    Utility::ObservableProperty<uint32_t> OriginalLength;
 
   protected:
     virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;

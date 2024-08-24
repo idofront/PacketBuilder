@@ -2,7 +2,7 @@
 #define PACKET_BUILDER__PACKET_BUILDER_HPP__
 
 #include <Absolute.hpp>
-#include <NotifyProperty.hpp>
+#include <ObservableProperty.hpp>
 #include <Options.hpp>
 #include <PcapPacketHeader.hpp>
 #include <algorithm>

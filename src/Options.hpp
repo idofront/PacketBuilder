@@ -2,7 +2,7 @@
 #define PACKET_BUILDER__OPTIONS_HPP
 
 #include <FileType.hpp>
-#include <NotifyProperty.hpp>
+#include <ObservableProperty.hpp>
 #include <cmdline/cmdline.h>
 #include <filesystem>
 #include <spdlog/spdlog.h>
@@ -12,10 +12,10 @@ class Options
 {
   public:
     Options();
-    Utility::NotifyProperty<std::filesystem::path> InputFilename;
-    Utility::NotifyProperty<std::filesystem::path> OutputFilename;
-    Utility::NotifyProperty<FileType> OutputFileType;
-    Utility::NotifyProperty<spdlog::level::level_enum> LogLevel;
+    Utility::ObservableProperty<std::filesystem::path> InputFilename;
+    Utility::ObservableProperty<std::filesystem::path> OutputFilename;
+    Utility::ObservableProperty<FileType> OutputFileType;
+    Utility::ObservableProperty<spdlog::level::level_enum> LogLevel;
 };
 
 #endif

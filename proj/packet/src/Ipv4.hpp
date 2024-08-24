@@ -2,7 +2,7 @@
 #define PACKET_BUILDER__IPV4_HPP__
 
 #include <Ipv4Entity.hpp>
-#include <NotifyProperty.hpp>
+#include <ObservableProperty.hpp>
 #include <Stackable.hpp>
 #include <netinet/ip.h>
 
@@ -20,37 +20,37 @@ class Ipv4 : public Stackable
 
   public:
     /// @brief バージョン
-    Utility::NotifyProperty<int> Version;
+    Utility::ObservableProperty<int> Version;
 
     /// @brief ヘッダ長
-    Utility::NotifyProperty<int> Ihl;
+    Utility::ObservableProperty<int> Ihl;
 
     /// @brief サービスタイプ
-    Utility::NotifyProperty<uint8_t> Tos;
+    Utility::ObservableProperty<uint8_t> Tos;
 
     /// @brief トータル長
-    Utility::NotifyProperty<uint16_t> TotalLength;
+    Utility::ObservableProperty<uint16_t> TotalLength;
 
     /// @brief 識別子
-    Utility::NotifyProperty<uint16_t> Id;
+    Utility::ObservableProperty<uint16_t> Id;
 
     /// @brief フラグ
-    Utility::NotifyProperty<uint16_t> Flags;
+    Utility::ObservableProperty<uint16_t> Flags;
 
     /// @brief フラグメントオフセット
-    Utility::NotifyProperty<uint8_t> Ttl;
+    Utility::ObservableProperty<uint8_t> Ttl;
 
     /// @brief プロトコル
-    Utility::NotifyProperty<uint8_t> Protocol;
+    Utility::ObservableProperty<uint8_t> Protocol;
 
     /// @brief チェックサム
-    Utility::NotifyProperty<uint16_t> Checksum;
+    Utility::ObservableProperty<uint16_t> Checksum;
 
     /// @brief 送信元アドレス
-    Utility::NotifyProperty<sockaddr_in> SourceAddress;
+    Utility::ObservableProperty<sockaddr_in> SourceAddress;
 
     /// @brief 宛先アドレス
-    Utility::NotifyProperty<sockaddr_in> DestinationAddress;
+    Utility::ObservableProperty<sockaddr_in> DestinationAddress;
 
   protected:
     virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;

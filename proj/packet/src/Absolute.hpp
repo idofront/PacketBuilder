@@ -2,7 +2,7 @@
 #define PACKET__ABSOLUTE_HPP
 
 #include <AbsoluteEntity.hpp>
-#include <NotifyProperty.hpp>
+#include <ObservableProperty.hpp>
 #include <Stackable.hpp>
 #include <chrono>
 
@@ -20,7 +20,7 @@ class Absolute : public Stackable
 
   public:
     /// @brief パケット到着時刻
-    Utility::NotifyProperty<std::chrono::nanoseconds> TimestampNs;
+    Utility::ObservableProperty<std::chrono::nanoseconds> TimestampNs;
 
   private:
     PacketEntity::AbsoluteEntityPtr Entity();

@@ -1,7 +1,7 @@
 #ifndef PACKET_BUILDER__UDP_HPP__
 #define PACKET_BUILDER__UDP_HPP__
 
-#include <NotifyProperty.hpp>
+#include <ObservableProperty.hpp>
 #include <Stackable.hpp>
 #include <UdpEntity.hpp>
 #include <netinet/udp.h>
@@ -20,17 +20,17 @@ class Udp : public Stackable
 
   public:
     /// @brief ソースポートを設定/取得する．
-    Utility::NotifyProperty<uint16_t> SourcePort;
+    Utility::ObservableProperty<uint16_t> SourcePort;
 
     /// @brief デスティネーションポートを設定/取得する．
-    Utility::NotifyProperty<uint16_t> DestinationPort;
+    Utility::ObservableProperty<uint16_t> DestinationPort;
 
     /// @brief UDP の長さを取得する．
     /// @details UDP ヘッダの長さを含む．
-    Utility::NotifyProperty<uint16_t> UdpLength;
+    Utility::ObservableProperty<uint16_t> UdpLength;
 
     /// @brief チェックサムを設定/取得する．
-    Utility::NotifyProperty<uint16_t> UdpChecksum;
+    Utility::ObservableProperty<uint16_t> UdpChecksum;
 
   protected:
     virtual void OnStacked(StackablePtr oldStackable, StackablePtr newStackable) override;
