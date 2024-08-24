@@ -1,7 +1,7 @@
 #ifndef PACKET_BUILDER__STACKABLE_HPP__
 #define PACKET_BUILDER__STACKABLE_HPP__
 
-#include <NotifyProperty.hpp>
+#include <ObservableProperty.hpp>
 #include <StackableEntity.hpp>
 #include <Utility.hpp>
 
@@ -33,7 +33,7 @@ class Stackable
     static StackablePtr Tail(StackablePtr stackable);
 
     /// @brief スタックされるデータを設定/取得する．
-    Utility::NotifyProperty<StackablePtr> Stack;
+    Utility::ObservableProperty<StackablePtr> Stack;
 
     /// @brief 自身の Entity を取得する．
     PacketEntity::StackableEntityPtr StackableEntity();
@@ -46,7 +46,7 @@ class Stackable
     std::size_t _Length;
     Utility::DataArrayPtr _DataArray;
     static void CopyDataArray(StackablePtr stackable, StackablePtr dest, std::size_t offset = 0);
-    Utility::NotifyProperty<PacketEntity::StackableEntityPtr> _StackableEntity;
+    Utility::ObservableProperty<PacketEntity::StackableEntityPtr> _StackableEntity;
 };
 } // namespace Packet
 
