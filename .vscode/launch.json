@@ -28,6 +28,34 @@
             ],
             "preLaunchTask": "CMake: Build (Debug)",
             "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "PacketBiulder: Input pcap, Output json",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/PacketBuilder",
+            "args": [
+                "-l",
+                "debug",
+                "-i",
+                "dns.pcap",
+                "-o",
+                "dns.json"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "CMake: Build (Debug)",
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }

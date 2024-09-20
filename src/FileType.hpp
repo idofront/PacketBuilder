@@ -7,6 +7,7 @@
 enum FileType
 {
     Pcap,
+    Json,
     None
 };
 
@@ -17,6 +18,8 @@ inline std::string FileTypeToString(FileType fileType)
     {
     case FileType::Pcap:
         return "Pcap";
+    case FileType::Json:
+        return "Json";
     case FileType::None:
         return "None";
     default:

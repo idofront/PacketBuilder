@@ -78,7 +78,7 @@ inline void ValidateOutputOption(const Options &options)
         return;
     }
 
-    auto validExtensions = {".pcap"};
+    auto validExtensions = Options::FileTypeKeys();
     auto extension = options.OutputFilename.Value().extension();
 
     if (std::find(validExtensions.begin(), validExtensions.end(), extension) == validExtensions.end())
