@@ -14,8 +14,12 @@ class Options
     Options();
     Utility::ObservableProperty<std::filesystem::path> InputFilename;
     Utility::ObservableProperty<std::filesystem::path> OutputFilename;
+    Utility::ObservableProperty<FileType> InputFileType;
     Utility::ObservableProperty<FileType> OutputFileType;
     Utility::ObservableProperty<spdlog::level::level_enum> LogLevel;
+
+    static const std::map<std::string, FileType> FileTypeMap;
+    static std::vector<std::string> FileTypeKeys();
 };
 
 #endif
