@@ -45,7 +45,7 @@ class Stackable
   private:
     std::size_t _Length;
     Utility::DataArrayPtr _DataArray;
-    static void CopyDataArray(StackablePtr stackable, StackablePtr dest, std::size_t offset = 0);
+    static void CopyDataArray(StackablePtr stackablePtr, StackablePtr dest, std::size_t offset = 0);
     Utility::ObservableProperty<PacketEntity::StackableEntityPtr> _StackableEntity;
 };
 } // namespace Packet

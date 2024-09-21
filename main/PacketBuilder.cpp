@@ -133,7 +133,8 @@ int main(int argc, char **argv)
                      // 出力
                      while (stackable != nullptr)
                      {
-                         auto type_name = Utility::Demangle(typeid(*stackable).name());
+                         auto &stackableRef = *stackable;
+                         auto type_name = Utility::Demangle(typeid(stackableRef).name());
                          auto fmt = boost::format("%1%:\n%2%");
                          auto msg = fmt % type_name % Packet::Stackable::HexDump(stackable);
                          SPDLOG_INFO(msg.str());
