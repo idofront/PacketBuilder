@@ -9,6 +9,7 @@
 #include <boost/format.hpp>
 #include <cmdline/cmdline.h>
 #include <filesystem>
+#include <fstream>
 #include <spdlog/spdlog.h>
 
 /// @brief ログレベルを文字列から変換する．
@@ -178,6 +179,43 @@ inline void SaveAsPcap(std::filesystem::path outputPath, std::vector<Packet::Sta
 
     pcap_dump_close(dumper);
     pcap_close(handle);
+}
+
+/// @brief パケットを json ファイルに保存する．
+/// @param outputPath 保存先のパス
+/// @param packets 保存するパケット
+inline void SaveAsJson(std::filesystem::path outputPath, std::vector<Packet::StackablePtr> packets)
+{
+    auto json = nlohmann::json::array();
+    for (auto index = 0; index < packets.size(); index++)
+    {
+        auto packetToGetJson = std::shared_ptr<Packet::Stackable>(nullptr);
+        auto &packet = packets[index];
+
+        // packet が Absolute であることを検証する
+        // TODO Absolute 型だけでなく，メタ情報を持つ Stackable であることを検証する．
+        auto &stackablePacketRef = *packet;
+        if (typeid(stackablePacketRef) == typeid(Packet::Absolute))
+        {
+            packetToGetJson = packet;
+        }
+        else
+        {
+            // メタ情報を持つ Stackable を持たない場合，強制的にメタ情報を付与する．
+            SPDLOG_WARN("The stackable does not have the meta information such as timestamp.",
+                        "This packet will added a meta information");
+            auto pseudoAbsolute = std::make_shared<Packet::Absolute>();
+            pseudoAbsolute->TimestampNs.Value(std::chrono::seconds(index));
+            packetToGetJson = pseudoAbsolute;
+        }
+
+        auto stackableEntityPtr = packetToGetJson->StackableEntity();
+        auto stackableEntityJson = stackableEntityPtr->ToJson();
+        json.push_back(stackableEntityJson);
+    }
+
+    auto ofs = std::ofstream(outputPath);
+    ofs << json;
 }
 
 #endif
