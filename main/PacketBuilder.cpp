@@ -116,8 +116,7 @@ int main(int argc, char **argv)
                  auto msg = fmt % options.OutputFilename.Value();
                  SPDLOG_INFO(msg.str());
 
-                 // SaveAsJson(options.OutputFilename.Value(), stackables);
-                 throw std::runtime_error("Not implemented");
+                 SaveAsJson(options.OutputFilename.Value(), stackables);
              }},
             {FileType::None,
              [&]() {
