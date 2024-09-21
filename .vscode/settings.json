@@ -83,7 +83,7 @@
         "forward_list": "cpp",
         "valarray": "cpp"
     },
-    "testMate.cpp.test.executables": "bin/test/*",
+    "testMate.cpp.test.executables": "build/test/*",
     "editor.formatOnSave": true,
     "json.schemaDownload.enable": true,
     "files.insertFinalNewline": true,
