@@ -42,20 +42,21 @@ PacketEntity::StackableEntityPtr Stackable::StackableEntity()
     return this->_StackableEntity.Value();
 }
 
-void Stackable::CopyDataArray(StackablePtr stackable, StackablePtr dest, std::size_t offset)
+void Stackable::CopyDataArray(StackablePtr stackablePtr, StackablePtr dest, std::size_t offset)
 {
     SPDLOG_TRACE("{}", __PRETTY_FUNCTION__);
-    if (stackable == nullptr)
+    if (stackablePtr == nullptr)
     {
         return;
     }
 
-    auto typeName = Utility::Demangle(typeid(*stackable).name());
-    auto length = stackable->Length();
+    auto &stackableRef = *stackablePtr;
+    auto typeName = Utility::Demangle(typeid(stackableRef).name());
+    auto length = stackablePtr->Length();
     SPDLOG_DEBUG("offset: {:4d}, length: {:4d}/{:4d}, typename: {}", offset, length, offset + length, typeName);
 
-    std::memcpy(dest->DataArray().get() + offset, stackable->DataArray().get(), stackable->Length());
-    CopyDataArray(stackable->Stack.Value(), dest, offset + stackable->Length());
+    std::memcpy(dest->DataArray().get() + offset, stackablePtr->DataArray().get(), stackablePtr->Length());
+    CopyDataArray(stackablePtr->Stack.Value(), dest, offset + stackablePtr->Length());
 }
 
 StackablePtr Stackable::Compose(StackablePtr stackable)

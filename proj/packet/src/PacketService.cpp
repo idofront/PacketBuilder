@@ -12,17 +12,19 @@ StackablePtr PacketService::StackableFromEntity(PacketEntity::StackableEntityPtr
     auto stackableFactory = GetStackableFactory(entity);
     auto stackable = stackableFactory->Get(entity);
 
-    auto stackedEntity = entity->Stack.Value();
-    if (stackedEntity)
+    auto stackedEntityPtr = entity->Stack.Value();
+    if (stackedEntityPtr)
     {
-        auto stackedType = typeid(*stackedEntity).name();
+        auto &stackedEntityRef = *stackedEntityPtr;
+        auto stackedType = typeid(stackedEntityRef).name();
         auto demangledStackedType = Utility::Demangle(stackedType);
         auto fmt = boost::format("The entity has a stack: %1%");
         auto msg = boost::str(fmt % demangledStackedType);
         SPDLOG_DEBUG(msg);
 
-        auto stackedStackable = StackableFromEntity(stackedEntity);
-        stackedType = typeid(*stackedStackable).name();
+        auto stackedStackable = StackableFromEntity(stackedEntityPtr);
+        auto &stackedStackableRef = *stackedStackable;
+        stackedType = typeid(stackedStackableRef).name();
         demangledStackedType = Utility::Demangle(stackedType);
         fmt = boost::format("Try to stack the entity: %1%");
         msg = boost::str(fmt % demangledStackedType);
@@ -39,7 +41,8 @@ StackableFactoryPtr PacketService::GetStackableFactory(PacketEntity::StackableEn
     try
     {
         auto factories = PacketService::StackableFactories;
-        auto type_name = typeid(*entityPtr).name();
+        auto &entityRef = *entityPtr;
+        auto type_name = typeid(entityRef).name();
         auto demangledType = Utility::Demangle(type_name);
 
         auto factory = factories.find(demangledType);
