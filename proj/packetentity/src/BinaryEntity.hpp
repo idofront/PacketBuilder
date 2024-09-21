@@ -18,6 +18,7 @@ class BinaryEntity : public StackableEntity
     BinaryEntity(std::size_t length);
     virtual ~BinaryEntity();
     virtual nlohmann::json ToJson() override;
+    virtual std::string ToString() override;
     static StackableEntityPtr FromJson(nlohmann::json json);
 
   public:

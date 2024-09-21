@@ -30,7 +30,7 @@
             "miDebuggerPath": "/usr/bin/gdb"
         },
         {
-            "name": "PacketBiulder: Input pcap, Output json",
+            "name": "PacketBiulder: Input pcap, Output none",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/PacketBuilder",
@@ -39,8 +39,6 @@
                 "debug",
                 "-i",
                 "dns.pcap",
-                "-o",
-                "dns.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

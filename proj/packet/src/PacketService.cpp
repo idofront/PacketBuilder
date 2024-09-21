@@ -34,27 +34,38 @@ StackablePtr PacketService::StackableFromEntity(PacketEntity::StackableEntityPtr
     return stackable;
 }
 
-StackableFactoryPtr PacketService::GetStackableFactory(PacketEntity::StackableEntityPtr entity)
+StackableFactoryPtr PacketService::GetStackableFactory(PacketEntity::StackableEntityPtr entityPtr)
 {
-    auto type = typeid(*entity).name();
-    auto demangledType = Utility::Demangle(type);
-
-    auto factory = StackableFactories.find(demangledType);
-    if (factory == StackableFactories.end())
+    try
     {
-        auto fmt = boost::format("Unknown entity type: %1%");
-        auto msg = boost::str(fmt % demangledType);
+        auto factories = PacketService::StackableFactories;
+        auto type_name = typeid(*entityPtr).name();
+        auto demangledType = Utility::Demangle(type_name);
+
+        auto factory = factories.find(demangledType);
+        if (factory == factories.end())
+        {
+            auto fmt = boost::format("Unknown entity type: %1%");
+            auto msg = boost::str(fmt % demangledType);
+            throw std::runtime_error(msg);
+        }
+
+        auto stackableFactoryPtr = factory->second;
+        return stackableFactoryPtr;
+    }
+    catch (const std::bad_typeid &e)
+    {
+        auto fmt = boost::format("Invalid typeid operation: %1%");
+        auto msg = boost::str(fmt % e.what());
         throw std::runtime_error(msg);
     }
-
-    auto stackableFactoryPtr = factory->second;
-    return stackableFactoryPtr;
 }
 
-std::map<std::string, StackableFactoryPtr> PacketService::StackableFactories = {
+PacketService::FactoryMap PacketService::StackableFactories = PacketService::FactoryMap{
     {Utility::Demangle(typeid(PacketEntity::AbsoluteEntity).name()), std::make_shared<AbsoluteFactory>()},
     {Utility::Demangle(typeid(PacketEntity::BinaryEntity).name()), std::make_shared<BinaryFactory>()},
     {Utility::Demangle(typeid(PacketEntity::EthernetEntity).name()), std::make_shared<EthernetFactory>()},
     {Utility::Demangle(typeid(PacketEntity::Ipv4Entity).name()), std::make_shared<Ipv4Factory>()},
-    {Utility::Demangle(typeid(PacketEntity::UdpEntity).name()), std::make_shared<UdpFactory>()}};
+    {Utility::Demangle(typeid(PacketEntity::UdpEntity).name()), std::make_shared<UdpFactory>()},
+};
 } // namespace Packet
