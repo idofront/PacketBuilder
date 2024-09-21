@@ -14,7 +14,6 @@
 #include <boost/format.hpp>
 #include <cmdline/cmdline.h>
 #include <cstring>
-#include <fstream>
 #include <iostream>
 #include <pcap.h>
 #include <spdlog/spdlog.h>
@@ -50,7 +49,23 @@ int main(int argc, char **argv)
                  auto msg = fmt % options.InputFilename.Value();
                  SPDLOG_INFO(msg.str());
 
-                 throw std::runtime_error("Not implemented");
+                 auto inputFilename = options.InputFilename.Value();
+                 auto entities = PacketEntity::EntityService::ParsePcap(inputFilename);
+
+                 auto stackables = std::vector<Packet::StackablePtr>();
+                 std::transform(entities.begin(), entities.end(), std::back_inserter(stackables),
+                                [](PacketEntity::StackableEntityPtr entity) -> Packet::StackablePtr {
+                                    try
+                                    {
+                                        return Packet::PacketService::StackableFromEntity(entity);
+                                    }
+                                    catch (const std::exception &e)
+                                    {
+                                        SPDLOG_ERROR(e.what());
+                                        return nullptr;
+                                    }
+                                });
+                 return stackables;
              }},
             {FileType::Json,
              [&]() {
@@ -59,14 +74,20 @@ int main(int argc, char **argv)
                  SPDLOG_INFO(msg.str());
 
                  auto inputFilename = options.InputFilename.Value();
-                 auto inputStream = std::ifstream(inputFilename);
-                 auto inputJson = nlohmann::json::parse(inputStream);
-                 auto entities = PacketEntity::EntityService::ParseEntities(inputJson);
+                 auto entities = PacketEntity::EntityService::ParseEntities(inputFilename);
 
-                 std::vector<Packet::StackablePtr> stackables;
+                 auto stackables = std::vector<Packet::StackablePtr>();
                  std::transform(entities.begin(), entities.end(), std::back_inserter(stackables),
-                                [](PacketEntity::StackableEntityPtr entity) {
-                                    return Packet::PacketService::StackableFromEntity(entity);
+                                [](PacketEntity::StackableEntityPtr entity) -> Packet::StackablePtr {
+                                    try
+                                    {
+                                        return Packet::PacketService::StackableFromEntity(entity);
+                                    }
+                                    catch (const std::exception &e)
+                                    {
+                                        SPDLOG_ERROR(e.what());
+                                        return nullptr;
+                                    }
                                 });
                  return stackables;
              }},
@@ -103,6 +124,23 @@ int main(int argc, char **argv)
                  auto fmt = boost::format("Output is disabled");
                  auto msg = fmt;
                  SPDLOG_INFO(msg.str());
+
+                 for (auto num = 0; num < stackables.size(); num++)
+                 {
+                     SPDLOG_INFO("Packet #{}", num);
+                     auto stackable = stackables[num];
+
+                     // 出力
+                     while (stackable != nullptr)
+                     {
+                         auto type_name = Utility::Demangle(typeid(*stackable).name());
+                         auto fmt = boost::format("%1%:\n%2%");
+                         auto msg = fmt % type_name % Packet::Stackable::HexDump(stackable);
+                         SPDLOG_INFO(msg.str());
+
+                         stackable = stackable->Stack.Value();
+                     }
+                 }
              }},
         };
         auto outputActionItr = output_actions.find(options.OutputFileType.Value());

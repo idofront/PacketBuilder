@@ -39,8 +39,6 @@
                 "debug",
                 "-i",
                 "dns.pcap",
-                "-o",
-                "dns.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

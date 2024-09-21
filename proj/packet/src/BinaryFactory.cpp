@@ -4,7 +4,8 @@ namespace Packet
 {
 StackablePtr BinaryFactory::Get(PacketEntity::StackableEntityPtr entity)
 {
-    auto entityPtr = std::dynamic_pointer_cast<PacketEntity::BinaryEntity>(entity);
-    return std::make_shared<Binary>(entityPtr);
+    auto binaryEntityPtr = std::dynamic_pointer_cast<PacketEntity::BinaryEntity>(entity);
+    auto entityPtr = std::make_shared<Binary>(binaryEntityPtr);
+    return entityPtr;
 }
 } // namespace Packet

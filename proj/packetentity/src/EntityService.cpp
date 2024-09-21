@@ -1,4 +1,6 @@
 #include <EntityService.hpp>
+#include <fstream>
+#include <pcap.h>
 
 namespace PacketEntity
 {
@@ -60,8 +62,11 @@ StackableEntityPtr EntityService::ParseEntity(nlohmann::json json)
     return entityPtr->Stack.Value();
 }
 
-std::vector<StackableEntityPtr> EntityService::ParseEntities(nlohmann::json json)
+std::vector<StackableEntityPtr> EntityService::ParseEntities(const std::filesystem::path &filepath)
 {
+    auto inputStream = std::ifstream(filepath);
+    auto json = nlohmann::json::parse(inputStream);
+
     auto entityPtrArray = std::vector<StackableEntityPtr>();
     auto array = json;
 
@@ -83,6 +88,70 @@ std::vector<StackableEntityPtr> EntityService::ParseEntities(nlohmann::json json
 
     std::transform(array.begin(), array.end(), std::back_inserter(entityPtrArray),
                    [](nlohmann::json entity) { return EntityService::ParseEntity(entity); });
+
+    return entityPtrArray;
+}
+
+StackableEntityPtr EntityService::ParsePcap(const struct pcap_pkthdr *const header, const uint8_t *packet)
+{
+    auto packet_length = header->caplen;
+
+    // TODO Binary 以外のエンティティを生成する
+    auto binaryEntityPtr = std::make_shared<BinaryEntity>(packet_length);
+    memcpy(binaryEntityPtr->Data->data(), packet, packet_length);
+
+    auto absoluteEntityPtr = std::make_shared<AbsoluteEntity>();
+    auto timestampNs = header->ts.tv_sec * 1000000000 + header->ts.tv_usec * 1000;
+    absoluteEntityPtr->TimestampNs = timestampNs;
+
+    absoluteEntityPtr->Stack.Value(binaryEntityPtr);
+
+    return absoluteEntityPtr;
+}
+
+std::vector<StackableEntityPtr> EntityService::ParsePcap(const std::filesystem::path &filepath)
+{
+    auto entityPtrArray = std::vector<StackableEntityPtr>();
+
+    // open pcap file
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *pcap_handle = pcap_open_offline(filepath.c_str(), errbuf);
+    if (pcap_handle == nullptr)
+    {
+        auto fmt = boost::format("Error opening pcap file: %1%");
+        auto msg = fmt % errbuf;
+        throw std::runtime_error(msg.str());
+    }
+
+    // get each packet from pcap file
+    struct pcap_pkthdr *header;
+    const u_char *packet_data;
+    int ret;
+
+    while ((ret = pcap_next_ex(pcap_handle, &header, &packet_data)) >= 0)
+    {
+        if (ret == 0)
+        {
+            SPDLOG_INFO("Timeout occurred");
+            continue;
+        }
+
+        // convert packet to entity
+        auto entityPtr = ParsePcap(header, packet_data);
+        entityPtrArray.push_back(entityPtr);
+    }
+
+    if (ret == -1)
+    {
+        auto fmt = boost::format("Error reading the packet: %1%");
+        auto msg = fmt % pcap_geterr(pcap_handle);
+        throw std::runtime_error(msg.str());
+    }
+
+    SPDLOG_INFO("Parsed {} packets", entityPtrArray.size());
+
+    // close pcap file
+    pcap_close(pcap_handle);
 
     return entityPtrArray;
 }

@@ -30,7 +30,8 @@ class PacketService
     static StackableFactoryPtr GetStackableFactory(PacketEntity::StackableEntityPtr entity);
 
   private:
-    static std::map<std::string, StackableFactoryPtr> StackableFactories;
+    using FactoryMap = std::map<std::string, StackableFactoryPtr>;
+    static FactoryMap StackableFactories;
 };
 } // namespace Packet
 
