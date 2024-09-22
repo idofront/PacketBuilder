@@ -96,9 +96,7 @@ StackableEntityPtr EntityService::ParsePcap(const struct pcap_pkthdr *const head
 {
     auto packet_length = header->caplen;
 
-    // TODO Binary 以外のエンティティを生成する
-    auto binaryEntityPtr = std::make_shared<BinaryEntity>(packet_length);
-    memcpy(binaryEntityPtr->Data->data(), packet, packet_length);
+    auto binaryEntityPtr = ParsePcapHelper::Parse(packet, packet_length);
 
     auto absoluteEntityPtr = std::make_shared<AbsoluteEntity>();
     auto timestampNs = header->ts.tv_sec * 1000000000 + header->ts.tv_usec * 1000;
