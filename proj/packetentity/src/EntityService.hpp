@@ -47,6 +47,12 @@ class EntityService
         static StackableEntityPtr ParseEthernet(const uint8_t *packet, std::size_t length);
         static StackableEntityPtr ParseIpv4(const uint8_t *packet, std::size_t length);
         static StackableEntityPtr ParseUdp(const uint8_t *packet, std::size_t length);
+        static StackableEntityPtr ParseBinary(const uint8_t *packet, std::size_t length);
+
+      private:
+        using NextEthernetFactoryMap =
+            std::map<uint16_t, std::function<StackableEntityPtr(const uint8_t *, std::size_t)>>;
+        static NextEthernetFactoryMap NextEthernetFactory;
     };
 };
 } // namespace PacketEntity
