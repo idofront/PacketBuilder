@@ -38,6 +38,16 @@ class EntityService
     /// @param filepath ファイルパス
     /// @return エンティティの配列
     static std::vector<StackableEntityPtr> ParsePcap(const std::filesystem::path &filepath);
+
+  private:
+    class ParsePcapHelper
+    {
+      public:
+        static StackableEntityPtr Parse(const uint8_t *packet, std::size_t length);
+        static StackableEntityPtr ParseEthernet(const uint8_t *packet, std::size_t length);
+        static StackableEntityPtr ParseIpv4(const uint8_t *packet, std::size_t length);
+        static StackableEntityPtr ParseUdp(const uint8_t *packet, std::size_t length);
+    };
 };
 } // namespace PacketEntity
 
