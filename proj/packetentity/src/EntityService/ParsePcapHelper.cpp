@@ -84,7 +84,8 @@ StackableEntityPtr EntityService::ParsePcapHelper::ParseUdp(const uint8_t *packe
 
 StackableEntityPtr EntityService::ParsePcapHelper::ParseBinary(const uint8_t *packet, std::size_t length)
 {
-    // TODO
-    throw std::runtime_error("Not implemented");
+    auto binaryEntityPtr = std::make_shared<BinaryEntity>(length);
+    memcpy(binaryEntityPtr->Data->data(), packet, length);
+    return binaryEntityPtr;
 }
 } // namespace PacketEntity
