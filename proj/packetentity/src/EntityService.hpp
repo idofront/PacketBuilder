@@ -40,19 +40,56 @@ class EntityService
     static std::vector<StackableEntityPtr> ParsePcap(const std::filesystem::path &filepath);
 
   private:
+    /// @brief エンティティのファクトリ関数群
     class ParsePcapHelper
     {
       public:
+        /// @brief パケットデータからエンティティを生成する．
+        /// @param packet パケットデータ
+        /// @param length パケット長
+        /// @return エンティティ
         static StackableEntityPtr Parse(const uint8_t *packet, std::size_t length);
+
+        /// @brief Ethernet ヘッダを解析する．
+        /// @param packet パケットデータ
+        /// @param length パケット長
+        /// @return エンティティ
         static StackableEntityPtr ParseEthernet(const uint8_t *packet, std::size_t length);
+
+        /// @brief IPv4 ヘッダを解析する．
+        /// @param packet パケットデータ
+        /// @param length パケット長
+        /// @return エンティティ
         static StackableEntityPtr ParseIpv4(const uint8_t *packet, std::size_t length);
+
+        /// @brief UDP ヘッダを解析する．
+        /// @param packet パケットデータ
+        /// @param length パケット長
+        /// @return エンティティ
         static StackableEntityPtr ParseUdp(const uint8_t *packet, std::size_t length);
+
+        /// @brief TCP ヘッダを解析する．
+        /// @param packet パケットデータ
+        /// @param length パケット長
+        /// @return エンティティ
+        static StackableEntityPtr ParseTcp(const uint8_t *packet, std::size_t length);
+
+        /// @brief バイナリデータを解析する．
+        /// @param packet パケットデータ
+        /// @param length パケット長
+        /// @return エンティティ
         static StackableEntityPtr ParseBinary(const uint8_t *packet, std::size_t length);
 
       private:
-        using NextEthernetFactoryMap =
-            std::map<uint16_t, std::function<StackableEntityPtr(const uint8_t *, std::size_t)>>;
+        using FactoryFunction = std::function<StackableEntityPtr(const uint8_t *, std::size_t)>;
+        static StackableEntityPtr CreateStackableEntity(FactoryFunction &factory, const uint8_t *packet,
+                                                        std::size_t length) noexcept;
+
+        using NextEthernetFactoryMap = std::map<uint16_t, FactoryFunction>;
         static NextEthernetFactoryMap NextEthernetFactory;
+
+        using NextIpv4FactoryMap = std::map<uint8_t, FactoryFunction>;
+        static NextIpv4FactoryMap NextIpFactory;
     };
 };
 } // namespace PacketEntity
