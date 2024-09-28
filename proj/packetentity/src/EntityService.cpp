@@ -96,13 +96,13 @@ StackableEntityPtr EntityService::ParsePcap(const struct pcap_pkthdr *const head
 {
     auto packet_length = header->caplen;
 
-    auto binaryEntityPtr = ParsePcapHelper::Parse(packet, packet_length);
+    auto entityPtr = ParsePcapHelper::Parse(packet, packet_length);
 
     auto absoluteEntityPtr = std::make_shared<AbsoluteEntity>();
     auto timestampNs = header->ts.tv_sec * 100'0000'000 + header->ts.tv_usec * 1000;
     absoluteEntityPtr->TimestampNs = timestampNs;
 
-    absoluteEntityPtr->Stack.Value(binaryEntityPtr);
+    absoluteEntityPtr->Stack.Value(entityPtr);
 
     return absoluteEntityPtr;
 }
