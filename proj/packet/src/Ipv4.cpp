@@ -5,7 +5,7 @@ namespace Packet
 {
 Ipv4::Ipv4()
     : Stackable(HeaderSize, std::make_shared<PacketEntity::Ipv4Entity>()), Version(0), Ihl(0), Tos(0), TotalLength(0),
-      Id(0), Flags(0), Ttl(0), Protocol(0), Checksum(0), SourceAddress({0}), DestinationAddress({0})
+      Id(0), Flags(0), FragmentOffset(0), Ttl(0), Protocol(0), Checksum(0), SourceAddress({0}), DestinationAddress({0})
 {
     RegisterCallbacks();
 
@@ -20,6 +20,7 @@ Ipv4::Ipv4()
     this->TotalLength.Value(this->Length());
     this->Id.Value(0);
     this->Flags.Value(0);
+    this->FragmentOffset.Value(0);
     this->Ttl.Value(64);
     this->Protocol.Value(IPPROTO_UDP);
     this->Checksum.Value(0);
@@ -28,9 +29,10 @@ Ipv4::Ipv4()
 }
 
 Ipv4::Ipv4(PacketEntity::Ipv4EntityPtr entity)
-    : Stackable(HeaderSize, entity), Version(entity->Version), Ihl(entity->IHL), Tos(entity->DSCP << 2 | entity->ECN),
-      TotalLength(entity->TotalLength), Id(entity->Identification), Flags(entity->Flags), Ttl(entity->TTL),
-      Protocol(entity->Protocol), Checksum(entity->HeaderChecksum), SourceAddress({0}), DestinationAddress({0})
+    : Stackable(entity->IHL * 4, entity), Version(entity->Version), Ihl(entity->IHL),
+      Tos(entity->DSCP << 2 | entity->ECN), TotalLength(entity->TotalLength), Id(entity->Identification),
+      Flags(entity->Flags), FragmentOffset(entity->FragmentOffset), Ttl(entity->TTL), Protocol(entity->Protocol),
+      Checksum(entity->HeaderChecksum), SourceAddress({0}), DestinationAddress({0})
 {
     RegisterCallbacks();
 
@@ -42,6 +44,7 @@ Ipv4::Ipv4(PacketEntity::Ipv4EntityPtr entity)
     this->TotalLength.Value(entity->TotalLength);
     this->Id.Value(entity->Identification);
     this->Flags.Value(entity->Flags);
+    this->FragmentOffset.Value(entity->FragmentOffset);
     this->Ttl.Value(entity->TTL);
     this->Protocol.Value(entity->Protocol);
     this->Checksum.Value(entity->HeaderChecksum);
@@ -162,6 +165,14 @@ void Ipv4::RegisterCallbacks()
         Entity()->Flags = newValue;
     });
 
+    this->FragmentOffset.RegisterCallback([this](uint16_t oldValue, uint16_t newValue) {
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->frag_off = htons(newValue);
+
+        Entity()->FragmentOffset = newValue;
+    });
+
     this->Ttl.RegisterCallback([this](uint8_t oldValue, uint8_t newValue) {
         auto data = this->DataArray().get();
         auto header = this->Ipv4Header();
@@ -187,13 +198,19 @@ void Ipv4::RegisterCallbacks()
     });
 
     this->SourceAddress.RegisterCallback([this](sockaddr_in oldValue, sockaddr_in newValue) {
-        // Entity はメモリを確保済みのはず。
-        inet_ntop(AF_INET, &(newValue.sin_addr), Entity()->SourceAddress.data(), INET_ADDRSTRLEN);
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->saddr = newValue.sin_addr.s_addr;
+
+        Entity()->SourceAddress = inet_ntoa(newValue.sin_addr);
     });
 
     this->DestinationAddress.RegisterCallback([this](sockaddr_in oldValue, sockaddr_in newValue) {
-        // Entity はメモリを確保済みのはず。
-        inet_ntop(AF_INET, &(newValue.sin_addr), Entity()->DestinationAddress.data(), INET_ADDRSTRLEN);
+        auto data = this->DataArray().get();
+        auto header = this->Ipv4Header();
+        header->daddr = newValue.sin_addr.s_addr;
+
+        Entity()->SourceAddress = inet_ntoa(newValue.sin_addr);
     });
 }
 } // namespace Packet

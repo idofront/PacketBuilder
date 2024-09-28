@@ -38,6 +38,9 @@ class Ipv4 : public Stackable
     Utility::ObservableProperty<uint16_t> Flags;
 
     /// @brief フラグメントオフセット
+    Utility::ObservableProperty<uint16_t> FragmentOffset;
+
+    /// @brief TTL
     Utility::ObservableProperty<uint8_t> Ttl;
 
     /// @brief プロトコル

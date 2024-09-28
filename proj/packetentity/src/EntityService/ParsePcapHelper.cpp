@@ -1,6 +1,7 @@
 #include <EntityService.hpp>
 #include <EthernetDot1qEntity.hpp>
 #include <net/ethernet.h>
+#include <netinet/ip.h>
 
 namespace PacketEntity
 {
@@ -173,26 +174,28 @@ StackableEntityPtr EntityService::ParsePcapHelper::ParseIpv4(const uint8_t *pack
     }
 
     entityPtr->Version = (packet[0] >> 4);
-    entityPtr->IHL = (packet[0] & 0x0F) * 4;
+    entityPtr->IHL = (packet[0] & 0x0F);
 
-    if (length < entityPtr->IHL)
+    if (length < entityPtr->IHL * 4)
     {
         auto fmt = boost::format("Length is lesser than IHL: %1% < %2%");
-        auto msg = boost::str(fmt % length % entityPtr->IHL);
+        auto msg = boost::str(fmt % length % (entityPtr->IHL * 4));
         throw std::runtime_error(msg);
     }
 
-    entityPtr->DSCP = (packet[1] >> 2);
-    entityPtr->ECN = (packet[1] & 0x03);
-    entityPtr->TotalLength = ntohs(*reinterpret_cast<const uint16_t *>(packet + 2));
-    entityPtr->Identification = ntohs(*reinterpret_cast<const uint16_t *>(packet + 4));
-    entityPtr->Flags = (packet[6] >> 5);
-    entityPtr->FragmentOffset = ntohs(*reinterpret_cast<const uint16_t *>(packet + 6)) & 0x1FFF;
-    entityPtr->TTL = packet[8];
-    entityPtr->Protocol = packet[9];
-    entityPtr->HeaderChecksum = ntohs(*reinterpret_cast<const uint16_t *>(packet + 10));
-    entityPtr->SourceAddress = *reinterpret_cast<const uint32_t *>(packet + 12);
-    entityPtr->DestinationAddress = *reinterpret_cast<const uint32_t *>(packet + 16);
+    auto ip_header = reinterpret_cast<const iphdr *>(packet);
+
+    entityPtr->DSCP = (ip_header->tos >> 2);
+    entityPtr->ECN = (ip_header->tos & 0x03);
+    entityPtr->TotalLength = ntohs(ip_header->tot_len);
+    entityPtr->Identification = ntohs(ip_header->id);
+    entityPtr->Flags = ntohs(ip_header->frag_off & 0xE000);
+    entityPtr->FragmentOffset = ntohs(ip_header->frag_off & 0x1FFF);
+    entityPtr->TTL = ip_header->ttl;
+    entityPtr->Protocol = ip_header->protocol;
+    entityPtr->HeaderChecksum = ntohs(ip_header->check);
+    entityPtr->SourceAddress = inet_ntoa(*reinterpret_cast<const in_addr *>(packet + 12));
+    entityPtr->DestinationAddress = inet_ntoa(*reinterpret_cast<const in_addr *>(packet + 16));
 
     auto nextFactoryItr = NextIpFactory.find(entityPtr->Protocol);
     auto nextFactory = std::function<StackableEntityPtr(const uint8_t *, std::size_t)>(ParseBinary);
@@ -213,8 +216,26 @@ StackableEntityPtr EntityService::ParsePcapHelper::ParseIpv4(const uint8_t *pack
         SPDLOG_WARN(msg);
     }
 
-    auto offset = entityPtr->IHL;
-    auto nextEntity = nextFactory(packet + offset, length - offset);
+    auto offset = entityPtr->IHL * 4;
+    auto nextEntity = StackableEntityPtr(nullptr);
+    try
+    {
+        nextEntity = nextFactory(packet + offset, length - offset);
+    }
+    catch (const std::exception &e)
+    {
+        {
+            auto fmt = boost::format("Failed to parse: %1%");
+            auto msg = boost::str(fmt % e.what());
+            SPDLOG_WARN(msg);
+        }
+        {
+            auto fmt = boost::format("Falling back to binary entity.");
+            auto msg = boost::str(fmt);
+            SPDLOG_WARN(msg);
+        }
+        nextEntity = ParseBinary(packet + offset, length - offset);
+    }
 
     entityPtr->Stack.Value(nextEntity);
     return entityPtr;
