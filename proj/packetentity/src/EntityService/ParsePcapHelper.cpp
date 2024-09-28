@@ -1,7 +1,9 @@
 #include <EntityService.hpp>
 #include <EthernetDot1qEntity.hpp>
+#include <PortPair.hpp>
 #include <net/ethernet.h>
 #include <netinet/ip.h>
+#include <netinet/udp.h>
 
 namespace PacketEntity
 {
@@ -241,6 +243,8 @@ StackableEntityPtr EntityService::ParsePcapHelper::ParseIpv4(const uint8_t *pack
     return entityPtr;
 }
 
+EntityService::ParsePcapHelper::NextTransportFactoryMap EntityService::ParsePcapHelper::NextTransportFactory = {};
+
 StackableEntityPtr EntityService::ParsePcapHelper::ParseTcp(const uint8_t *packet, std::size_t length)
 {
     // TODO
@@ -249,8 +253,60 @@ StackableEntityPtr EntityService::ParsePcapHelper::ParseTcp(const uint8_t *packe
 
 StackableEntityPtr EntityService::ParsePcapHelper::ParseUdp(const uint8_t *packet, std::size_t length)
 {
-    // TODO
-    throw std::runtime_error("Not implemented for UDP");
+    auto entityPtr = std::make_shared<UdpEntity>();
+
+    if (length < 8)
+    {
+        auto fmt = boost::format("Length is too short to parse UDP header: %1%");
+        auto msg = boost::str(fmt % length);
+        throw std::runtime_error(msg);
+    }
+
+    auto udpHeader = reinterpret_cast<const struct udphdr *>(packet);
+
+    entityPtr->SourcePort = ntohs(udpHeader->source);
+    entityPtr->DestinationPort = ntohs(udpHeader->dest);
+    entityPtr->Length = ntohs(udpHeader->len);
+    entityPtr->Checksum = ntohs(udpHeader->check);
+
+    // TODO Application Layer の解析
+    auto portPair = Utility::PortPair(entityPtr->SourcePort, entityPtr->DestinationPort);
+    auto nextFactoryItr = NextTransportFactory.find(portPair);
+    auto nextFactory = std::function<StackableEntityPtr(const uint8_t *, std::size_t)>(ParseBinary);
+
+    if (nextFactoryItr != NextTransportFactory.end())
+    {
+        nextFactory = nextFactoryItr->second;
+    }
+    else
+    {
+        nextFactory = ParseBinary;
+    }
+
+    auto offset = sizeof(struct udphdr);
+    auto nextEntity = StackableEntityPtr(nullptr);
+    try
+    {
+        nextEntity = nextFactory(packet + offset, length - offset);
+    }
+    catch (const std::exception &e)
+    {
+        {
+            auto fmt = boost::format("Failed to parse: %1%");
+            auto msg = boost::str(fmt % e.what());
+            SPDLOG_WARN(msg);
+        }
+        {
+            auto fmt = boost::format("Falling back to binary entity.");
+            auto msg = boost::str(fmt);
+            SPDLOG_WARN(msg);
+        }
+        nextEntity = ParseBinary(packet + offset, length - offset);
+    }
+
+    entityPtr->Stack.Value(nextEntity);
+
+    return entityPtr;
 }
 
 StackableEntityPtr EntityService::ParsePcapHelper::ParseBinary(const uint8_t *packet, std::size_t length)

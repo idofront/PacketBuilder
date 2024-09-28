@@ -5,6 +5,7 @@
 #include <BinaryEntity.hpp>
 #include <EthernetEntity.hpp>
 #include <Ipv4Entity.hpp>
+#include <PortPair.hpp>
 #include <StackableEntity.hpp>
 #include <UdpEntity.hpp>
 #include <Utility.hpp>
@@ -90,6 +91,9 @@ class EntityService
 
         using NextIpv4FactoryMap = std::map<uint8_t, FactoryFunction>;
         static NextIpv4FactoryMap NextIpFactory;
+
+        using NextTransportFactoryMap = std::map<Utility::PortPair, FactoryFunction>;
+        static NextTransportFactoryMap NextTransportFactory;
     };
 };
 } // namespace PacketEntity
