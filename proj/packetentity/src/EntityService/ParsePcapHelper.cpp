@@ -1,4 +1,5 @@
 #include <EntityService.hpp>
+#include <EthernetDot1qEntity.hpp>
 #include <net/ethernet.h>
 
 namespace PacketEntity
@@ -34,14 +35,73 @@ EntityService::ParsePcapHelper::NextEthernetFactoryMap EntityService::ParsePcapH
     {ETHERTYPE_IP, EntityService::ParsePcapHelper::ParseIpv4},
 };
 
+EthernetDot1qEntity::Dot1qHeader GetDot1qHeader(const uint8_t *packet, std::size_t length)
+{
+    auto dot1qHeader = EthernetDot1qEntity::Dot1qHeader();
+
+    auto size = sizeof(EthernetDot1qEntity::Dot1qHeader::TagControl);
+    if (length < size)
+    {
+        auto fmt = boost::format("Length is too short to parse Dot1q header: %1%");
+        auto msg = boost::str(fmt % length);
+        throw std::runtime_error(msg);
+    }
+
+    auto userPriority = packet[0] >> 5;
+    auto canonicalFormatIndicator = (packet[0] >> 4) & 0x01;
+    auto vlanIdentifier = ((packet[0] & 0x0F) << 8) | packet[1];
+
+    dot1qHeader.Tpid = ntohs(*reinterpret_cast<const uint16_t *>(packet));
+    dot1qHeader.TagControl.UserPriority = userPriority;
+    dot1qHeader.TagControl.CanonicalFormat = canonicalFormatIndicator;
+    dot1qHeader.TagControl.VlanIdentifier = vlanIdentifier;
+
+    return dot1qHeader;
+}
+
 StackableEntityPtr EntityService::ParsePcapHelper::ParseEthernet(const uint8_t *packet, std::size_t length)
 {
     auto entityPtr = std::make_shared<EthernetEntity>();
 
     auto etherHeader = reinterpret_cast<const ether_header *>(packet);
     auto etherType = ntohs(etherHeader->ether_type);
+    auto macHeaderLength = sizeof(ether_header);
+
+    // TODO #50 VLAN タグがある場合のテスト
+
     auto etherSourceMac = etherHeader->ether_shost;
     auto etherDestinationMac = etherHeader->ether_dhost;
+    auto offset = sizeof(ether_header);
+
+    if (etherType == ETHERTYPE_VLAN)
+    {
+        auto dot1qHeader = GetDot1qHeader(packet + macHeaderLength * 2, length - macHeaderLength * 2);
+        auto entityDot1qEntity = std::make_shared<EthernetDot1qEntity>();
+        entityDot1qEntity->VlanHeader = dot1qHeader;
+        entityPtr = entityDot1qEntity;
+
+        auto tagProtocolIdentifier = dot1qHeader.Tpid;
+        auto userPriority = dot1qHeader.TagControl.UserPriority;
+        auto canonicalFormatIndicator = dot1qHeader.TagControl.CanonicalFormat;
+        auto vlanIdentifier = dot1qHeader.TagControl.VlanIdentifier;
+
+        dot1qHeader.Tpid = ntohs(tagProtocolIdentifier);
+        dot1qHeader.TagControl.UserPriority = userPriority;
+        dot1qHeader.TagControl.CanonicalFormat = canonicalFormatIndicator;
+        dot1qHeader.TagControl.VlanIdentifier = vlanIdentifier;
+
+        // VLAN タグが存在する場合，EtherType は VLAN タグの後にある
+        auto etherTypeWithVlanOffset = sizeof(macHeaderLength) * 2 + sizeof(ether_header::ether_type);
+        etherType = ntohs(*reinterpret_cast<const uint16_t *>(packet + etherTypeWithVlanOffset));
+
+        // VLAN タグの長さを考慮してオフセットを更新する
+        offset += sizeof(EthernetDot1qEntity::Dot1qHeader::TagControl_u::Value);
+    }
+    else
+    {
+        entityPtr = std::make_shared<EthernetEntity>();
+    }
+
     entityPtr->Type = (etherType);
     Utility::EthernetAddressToString(entityPtr->SourceMac, etherSourceMac);
     Utility::EthernetAddressToString(entityPtr->DestinationMac, etherDestinationMac);
@@ -65,8 +125,6 @@ StackableEntityPtr EntityService::ParsePcapHelper::ParseEthernet(const uint8_t *
         SPDLOG_WARN(msg);
     }
 
-    // TODO #42 Ethernet Header の長さは可変のため，要修正
-    auto offset = sizeof(ether_header);
     auto nextEntity = CreateStackableEntity(nextFactory, packet + offset, length - offset);
     entityPtr->Stack.Value(nextEntity);
 
