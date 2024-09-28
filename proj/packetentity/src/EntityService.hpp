@@ -19,6 +19,8 @@ namespace PacketEntity
 class EntityService
 {
   public:
+    friend class ParseBinaryTest;
+
     /// @brief JSON からエンティティを生成する．
     /// @param json JSON
     /// @return エンティティ
