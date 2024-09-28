@@ -2,6 +2,7 @@
 #define PACKET_ENTITY__ETHERNET_ENTITY_HPP
 
 #include <StackableEntity.hpp>
+#include <net/ethernet.h>
 
 namespace PacketEntity
 {
