@@ -5,7 +5,9 @@
       "name": "Linux",
       "includePath": [
         "${workspaceFolder}/proj/*/src",
+        "${workspaceFolder}/proj/*/src/**",
         "${workspaceFolder}/plugin/*/src",
+        "${workspaceFolder}/plugin/*/src/**",
         "${workspaceFolder}/submodules/**"
       ],
       "defines": [],

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(plugincontract)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/Parser)
+include_directories(${PROJECT_SOURCE_DIR}/src/Dumper)
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
