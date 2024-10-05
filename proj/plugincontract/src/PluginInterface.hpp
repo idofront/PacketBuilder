@@ -3,7 +3,7 @@
 
 #include <memory>
 
-namespace Plugin
+namespace PluginContract
 {
 // 依存関係の例としてのコンポーネント
 class Dependency
@@ -27,6 +27,6 @@ class PluginInterface
     virtual void setDependency(std::shared_ptr<Dependency> dependency) = 0;
 };
 
-} // namespace Plugin
+} // namespace PluginContract
 
 #endif

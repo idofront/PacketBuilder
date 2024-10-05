@@ -22,8 +22,8 @@ using Poco::Util::OptionSet;
 
 namespace PluginSystem
 {
-typedef Poco::ClassLoader<Plugin::PluginInterface> PluginLoader;
-typedef Poco::Manifest<Plugin::PluginInterface> PluginManifest;
+typedef Poco::ClassLoader<PluginContract::PluginInterface> PluginLoader;
+typedef Poco::Manifest<PluginContract::PluginInterface> PluginManifest;
 
 class PluginSystem : public Application
 {
@@ -47,7 +47,7 @@ class PluginSystem : public Application
         PluginLoader loader;
 
         // 依存関係のインスタンスを作成
-        auto dependency = std::make_shared<Plugin::Dependency>();
+        auto dependency = std::make_shared<PluginContract::Dependency>();
 
         try
         {
@@ -71,7 +71,7 @@ class PluginSystem : public Application
                         PluginManifest::Iterator manifestEnd = loaderIt->second->end();
                         for (; manifestIt != manifestEnd; ++manifestIt)
                         {
-                            Plugin::PluginInterface *plugin = manifestIt->create();
+                            PluginContract::PluginInterface *plugin = manifestIt->create();
                             plugin->setDependency(dependency);
                             plugin->execute();
                             delete plugin;

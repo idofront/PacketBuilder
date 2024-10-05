@@ -3,7 +3,7 @@
 #include <Poco/ClassLibrary.h>
 #include <iostream>
 
-class MyPlugin : public Plugin::PluginInterface
+class MyPlugin : public PluginContract::PluginInterface
 {
   public:
     void execute() override
@@ -15,15 +15,15 @@ class MyPlugin : public Plugin::PluginInterface
         std::cout << "MyPlugin executed!" << std::endl;
     }
 
-    void setDependency(std::shared_ptr<Plugin::Dependency> dependency) override
+    void setDependency(std::shared_ptr<PluginContract::Dependency> dependency) override
     {
         _dependency = dependency;
     }
 
   private:
-    std::shared_ptr<Plugin::Dependency> _dependency;
+    std::shared_ptr<PluginContract::Dependency> _dependency;
 };
 
-POCO_BEGIN_MANIFEST(Plugin::PluginInterface)
+POCO_BEGIN_MANIFEST(PluginContract::PluginInterface)
 POCO_EXPORT_CLASS(MyPlugin)
 POCO_END_MANIFEST
