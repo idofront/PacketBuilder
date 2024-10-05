@@ -23,9 +23,11 @@ apt install \
 以下の入力フォーマットに対応しています．
 
 - JSON
+- PCAP
 
 ## Output Format
 
 以下の出力フォーマットに対応しています．
 
+- JSON
 - PCAP (usec 精度)
