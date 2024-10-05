@@ -1,10 +1,14 @@
 #ifndef UTILITY__NOTIFY_PROPERTY_HPP
 #define UTILITY__NOTIFY_PROPERTY_HPP
 
+#include <memory>
 #include <functional>
 
 namespace Utility
 {
+template <typename T> class ObservableProperty;
+template <typename T> using ObservablePropertyPtr = std::shared_ptr<ObservableProperty<T>>;
+
 /// @brief 値の変更通知を提供可能なプロパティ
 /// @tparam T 値の型
 /// @details 値が変化したかどうかによらず Value を Set されると Notify が呼ばれる．
