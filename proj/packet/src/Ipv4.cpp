@@ -210,7 +210,7 @@ void Ipv4::RegisterCallbacks()
         auto header = this->Ipv4Header();
         header->daddr = newValue.sin_addr.s_addr;
 
-        Entity()->SourceAddress = inet_ntoa(newValue.sin_addr);
+        Entity()->DestinationAddress = inet_ntoa(newValue.sin_addr);
     });
 }
 } // namespace Packet
