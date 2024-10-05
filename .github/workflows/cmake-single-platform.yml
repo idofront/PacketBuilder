@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install
-        run: sudo apt-get install -y libpcap-dev libspdlog-dev nlohmann-json3-dev libboost-all-dev libfmt-dev libgtest-dev
+        run: sudo apt-get install -y libpcap-dev libspdlog-dev nlohmann-json3-dev libboost-all-dev libfmt-dev libgtest-dev libpoco-dev
 
       - name: Submodule
         run: git submodule update --init --recursive
