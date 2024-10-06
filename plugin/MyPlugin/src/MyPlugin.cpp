@@ -1,29 +1,31 @@
-// プラグインの実装例
 #include <PluginInterface.hpp>
 #include <Poco/ClassLibrary.h>
-#include <iostream>
 
+#include <MyJsonParser.hpp>
+#include <Utility.hpp>
+#include <iostream>
+#include <memory>
+#include <spdlog/spdlog.h>
+
+namespace MyPlugin
+{
 class MyPlugin : public PluginContract::PluginInterface
 {
   public:
-    void execute() override
+    MyPlugin()
     {
-        if (_dependency)
-        {
-            _dependency->doSomething();
-        }
-        std::cout << "MyPlugin executed!" << std::endl;
     }
 
-    void setDependency(std::shared_ptr<PluginContract::Dependency> dependency) override
+    void ExecuteImpl() override
     {
-        _dependency = dependency;
+        auto container = this->Container();
+        auto jsonParser = std::make_shared<MyJsonParser>();
+        container->RegisterParser(jsonParser);
+        // auto msg = Utility::Demangle(typeid(*this).name());
     }
-
-  private:
-    std::shared_ptr<PluginContract::Dependency> _dependency;
 };
+} // namespace MyPlugin
 
 POCO_BEGIN_MANIFEST(PluginContract::PluginInterface)
-POCO_EXPORT_CLASS(MyPlugin)
+POCO_EXPORT_CLASS(MyPlugin::MyPlugin)
 POCO_END_MANIFEST

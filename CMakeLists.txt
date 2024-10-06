@@ -24,6 +24,7 @@ file(GLOB plugin_dirs LIST_DIRECTORIES true ${CMAKE_SOURCE_DIR}/plugin/*)
 foreach(plugin_dir ${plugin_dirs})
   if (EXISTS "${plugin_dir}/CMakeLists.txt")
     get_filename_component(plugin_name ${plugin_dir} NAME)
+    include_directories(${plugin_dir}/src)
     list(APPEND plugin_names ${plugin_name})  # プラグイン名をリストに追加
     add_subdirectory(${plugin_dir} ${CMAKE_BINARY_DIR}/plugin/${plugin_name})
     source_group("Plugin\\${plugin_name}" FILES ${plugin_dir}/*)
@@ -49,8 +50,6 @@ endif()
 # libpoco の設定
 find_package(Poco REQUIRED COMPONENTS Foundation Util Net)
 include_directories(${Poco_INCLUDE_DIRS})
-
-include_directories(${PCAP_INCLUDE_DIR})
 
 # include ディレクトリを追加
 include_directories(${PROJECT_SOURCE_DIR}/include)

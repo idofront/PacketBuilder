@@ -32,6 +32,8 @@ class PluginSystem : public Application
     {
         Application::initialize(self);
         logger().information("Initializing");
+
+        this->_Container = std::make_shared<PluginContract::PluginContainer>();
     }
 
     void uninitialize() override
@@ -45,9 +47,6 @@ class PluginSystem : public Application
         Poco::Path basePath(config().getString("application.path"));
         std::string pluginDir = config().getString("pluginDir", basePath.parent().toString() + "/plugins");
         PluginLoader loader;
-
-        // 依存関係のインスタンスを作成
-        auto dependency = std::make_shared<PluginContract::Dependency>();
 
         try
         {
@@ -72,8 +71,8 @@ class PluginSystem : public Application
                         for (; manifestIt != manifestEnd; ++manifestIt)
                         {
                             PluginContract::PluginInterface *plugin = manifestIt->create();
-                            plugin->setDependency(dependency);
-                            plugin->execute();
+                            plugin->SetContainer(_Container);
+                            plugin->Execute();
                             delete plugin;
                         }
                     }
@@ -115,6 +114,9 @@ class PluginSystem : public Application
         helpFormatter.format(std::cout);
         stopOptionsProcessing();
     }
+
+  private:
+    PluginContract::PluginContainerPtr _Container;
 };
 } // namespace PluginSystem
 

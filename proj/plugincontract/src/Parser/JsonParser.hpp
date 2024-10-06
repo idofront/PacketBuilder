@@ -1,7 +1,8 @@
 #ifndef PLUGINCONTRACT__PARSER__JSONPARSER_HPP
 #define PLUGINCONTRACT__PARSER__JSONPARSER_HPP
 
-#include <AbstractParser.hpp>
+#include <Parser/AbstractParser.hpp>
+#include <spdlog/spdlog.h>
 
 namespace PluginContract
 {

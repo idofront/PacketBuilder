@@ -5,7 +5,7 @@
 #include <boost/format.hpp>
 #include <spdlog/spdlog.h>
 
-namespace PluginContainer
+namespace PluginContract
 {
 void PluginContainer::RegisterDumper(PluginContract::Dumper::DumperPtr dumper)
 {
@@ -22,9 +22,9 @@ void PluginContainer::RegisterDumper(PluginContract::Dumper::DumperPtr dumper)
 
     if (dumperPtr != nullptr)
     {
-        SPDLOG_WARN(boost::str(boost::format("Dumper {} already registered.") % type_name));
+        SPDLOG_WARN(boost::str(boost::format("Dumper (%1%) already registered.") % type_name));
     }
-    SPDLOG_INFO(boost::str(boost::format("Registered dumper: {}") % type_name));
+    SPDLOG_INFO(boost::str(boost::format("Registered dumper: %1%") % type_name));
     _Dumpers.push_back(dumper);
 }
 
@@ -43,9 +43,9 @@ void PluginContainer::RegisterParser(PluginContract::Parser::ParserPtr parser)
 
     if (parserPtr != nullptr)
     {
-        SPDLOG_WARN(boost::str(boost::format("Parser {} already registered.") % type_name));
+        SPDLOG_WARN(boost::str(boost::format("Parser (%1%) already registered.") % type_name));
     }
-    SPDLOG_INFO(boost::str(boost::format("Registered parser: {}") % type_name));
+    SPDLOG_INFO(boost::str(boost::format("Registered parser: %1%") % type_name));
     _Parsers.push_back(parser);
 }
-} // namespace PluginContainer
+} // namespace PluginContract

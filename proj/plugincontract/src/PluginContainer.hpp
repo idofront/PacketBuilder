@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-namespace PluginContainer
+namespace PluginContract
 {
 class PluginContainer
 {
