@@ -54,6 +54,27 @@
             ],
             "preLaunchTask": "CMake: Build (Debug)",
             "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "PluginSystem",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/PluginSystem",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "CMake: Build (Debug)",
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }

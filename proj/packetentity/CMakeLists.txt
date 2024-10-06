@@ -8,7 +8,7 @@ file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 # utility ライブラリを追加
 include_directories(${PROJECT_SOURCE_DIR}/../utility/src)
 
-# utility ライブラリを追加
+# 外部ライブラリを追加
 include_directories(${PROJECT_SOURCE_DIR}/../../submodules)
 
 # ライブラリを生成
