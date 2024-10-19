@@ -6,7 +6,9 @@
 #include <PcapFileHeaderEntity.hpp>
 #include <PcapPacketHeaderEntity.hpp>
 #include <PluginContainer.hpp>
+#include <ReadOnlyObservableProperty.hpp>
 #include <filesystem>
+#include <memory>
 #include <pcap.h>
 #include <string.h>
 
@@ -26,19 +28,7 @@ class PluginPacketBuilder
     }
 
   private:
-    class PcapDataSet
-    {
-      public:
-        PcapDataSet(std::vector<PacketEntity::StackableEntityPtr> stackableEntities)
-            : _StackableEntities(stackableEntities)
-        {
-        }
-
-      private:
-        std::vector<PacketEntity::StackableEntityPtr> _StackableEntities;
-    };
-    using PcapDataSetPtr = std::shared_ptr<PcapDataSet>;
-
+    using StackableEntityPtrs = std::vector<PacketEntity::StackableEntityPtr>;
     PluginContract::PluginContainerPtr _Container;
     void ReadPcap(const std::filesystem::path &path)
     {
@@ -48,12 +38,18 @@ class PluginPacketBuilder
             throw std::runtime_error("Failed to open pcap file.");
         }
 
-        ParsePcapHeader(pcap);
-        ParsePcapData(pcap);
+        // パケットデータを解析して Entity に変換
+        auto stackableEntityPtrs = ParsePcapHeader(pcap);
+
+        // 解析処理後の Entity を入れるための配列
+        auto parsedEntities = std::vector<PacketEntity::StackableEntityPtr>();
+
+        std::transform(stackableEntityPtrs.begin(), stackableEntityPtrs.end(), std::back_inserter(parsedEntities),
+                       [&](const auto &entityPtr) { return ParsePcapData(entityPtr); });
         pcap_close(pcap);
     }
 
-    PcapDataSetPtr ParsePcapHeader(pcap_t *pcap)
+    StackableEntityPtrs ParsePcapHeader(pcap_t *pcap)
     {
         auto stackableEntities = std::vector<PacketEntity::StackableEntityPtr>();
         while (true)
@@ -100,10 +96,19 @@ class PluginPacketBuilder
             }
         }
 
-        return std::make_shared<PcapDataSet>(stackableEntities);
+        return stackableEntities;
     }
-    void ParsePcapData(pcap_t *pcap)
+
+    PacketEntity::StackableEntityPtr ParsePcapData(const PacketEntity::StackableEntityPtr stackableEntityPtr)
     {
+        while (true)
+        {
+            break;
+        }
+        auto pcapPacketHeaderEntity = std::make_shared<PacketEntity::PcapPacketHeaderEntity>();
+        auto binaryEntityPtr = std::make_shared<PacketEntity::BinaryEntity>(0);
+        pcapPacketHeaderEntity->Stack.Value(binaryEntityPtr);
+        return pcapPacketHeaderEntity;
     }
 };
 } // namespace PluginPacketBuilder
