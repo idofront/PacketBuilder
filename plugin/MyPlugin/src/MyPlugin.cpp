@@ -22,7 +22,7 @@ class MyPlugin : public PluginContract::PluginInterface
         auto container = this->Container();
 
         auto jsonParser = std::make_shared<MyJsonParser>();
-        container->RegisterParser(jsonParser);
+        container->RegisterParser(jsonParser, []() { return true; });
 
         auto jsonDumper = std::make_shared<MyJsonDumpler>();
         container->RegisterDumper(jsonDumper);
