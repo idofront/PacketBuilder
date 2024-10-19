@@ -1,7 +1,7 @@
 #ifndef PLUGINCONTRACT__DUMPER__PCAPDUMPER_HPP
 #define PLUGINCONTRACT__DUMPER__PCAPDUMPER_HPP
 
-#include <AbstractDumper.hpp>
+#include "AbstractDumper.hpp"
 
 namespace PluginContract
 {

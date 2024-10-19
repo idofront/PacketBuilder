@@ -2,6 +2,7 @@
 #define PLUGIN_SYSTEM_HPP__
 
 #include <PluginInterface.hpp>
+#include <PluginPacketBuilder.hpp>
 #include <Poco/ClassLoader.h>
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Manifest.h>
@@ -53,6 +54,10 @@ class PluginSystem : public Application
             Poco::Path pluginDirPath(pluginDir);
             Poco::DirectoryIterator it(pluginDirPath);
             Poco::DirectoryIterator end;
+
+            auto pluginPacketBuilder = std::make_shared<PluginPacketBuilder::PluginPacketBuilder>(_Container);
+            auto plugins = std::vector<std::shared_ptr<PluginContract::PluginInterface>>();
+
             for (; it != end; ++it)
             {
                 if (it->isFile() && (it.path().getExtension() == "so" || it.path().getExtension() == "dll"))
@@ -70,10 +75,10 @@ class PluginSystem : public Application
                         PluginManifest::Iterator manifestEnd = loaderIt->second->end();
                         for (; manifestIt != manifestEnd; ++manifestIt)
                         {
-                            PluginContract::PluginInterface *plugin = manifestIt->create();
+                            auto plugin = std::shared_ptr<PluginContract::PluginInterface>(manifestIt->create());
                             plugin->SetContainer(_Container);
                             plugin->Execute();
-                            delete plugin;
+                            plugins.push_back(plugin);
                         }
                     }
                 }

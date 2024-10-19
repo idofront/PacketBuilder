@@ -28,7 +28,7 @@ void PluginContainer::RegisterDumper(PluginContract::Dumper::DumperPtr dumper)
     _Dumpers.push_back(dumper);
 }
 
-void PluginContainer::RegisterParser(PluginContract::Parser::ParserPtr parser)
+void PluginContainer::RegisterParser(ParserPtr parser, ParserCondition condition)
 {
     if (!parser)
     {
@@ -46,6 +46,6 @@ void PluginContainer::RegisterParser(PluginContract::Parser::ParserPtr parser)
         SPDLOG_WARN(boost::str(boost::format("Parser (%1%) already registered.") % type_name));
     }
     SPDLOG_INFO(boost::str(boost::format("Registered parser: %1%") % type_name));
-    _Parsers.push_back(parser);
+    _Parsers.push_back({parser, []() { return true; }});
 }
 } // namespace PluginContract

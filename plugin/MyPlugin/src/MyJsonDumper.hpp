@@ -1,5 +1,5 @@
-#ifndef MY_PLUGIN__MY_JSON_PARSER_HPP
-#define MY_PLUGIN__MY_JSON_PARSER_HPP
+#ifndef MY_PLUGIN__MY_JSON_DUMPER_HPP
+#define MY_PLUGIN__MY_JSON_DUMPER_HPP
 
 #include <Dumper/JsonDumper.hpp>
 
