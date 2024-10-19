@@ -15,7 +15,7 @@ template <typename T> class ReadOnlyObservableProperty
 {
   public:
     ReadOnlyObservableProperty() = delete;
-    ReadOnlyObservableProperty(ObservablePropertyPtr propertyPtr)
+    ReadOnlyObservableProperty(ObservablePropertyPtr<T> propertyPtr)
     {
         if (propertyPtr == nullptr)
         {
@@ -27,18 +27,18 @@ template <typename T> class ReadOnlyObservableProperty
 
     T Value() const
     {
-        return _Property->Value();
+        return _PropertyPtr->Value();
     }
 
     /// @brief 値が変更されたときに呼ばれるコールバックを登録する．
     /// @param callback コールバック
     void RegisterCallback(std::function<void(T, T)> callback)
     {
-        _Property->RegisterCallback(callback);
+        _PropertyPtr->RegisterCallback(callback);
     }
 
   private:
-    ObservablePropertyPtr _PropertyPtr;
+    ObservablePropertyPtr<T> _PropertyPtr;
 };
 } // namespace Utility
 
