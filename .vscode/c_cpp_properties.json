@@ -4,6 +4,7 @@
     {
       "name": "Linux",
       "includePath": [
+        "${workspaceFolder}/include/",
         "${workspaceFolder}/proj/*/src",
         "${workspaceFolder}/proj/*/src/**",
         "${workspaceFolder}/plugin/*/src",
