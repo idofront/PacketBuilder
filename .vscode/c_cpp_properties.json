@@ -1,9 +1,13 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "configurations": [
     {
       "name": "Linux",
       "includePath": [
-        "${workspaceFolder}/**",
+        "${workspaceFolder}/proj/*/src",
+        "${workspaceFolder}/proj/*/src/**",
+        "${workspaceFolder}/plugin/*/src",
+        "${workspaceFolder}/plugin/*/src/**",
         "${workspaceFolder}/submodules/**"
       ],
       "defines": [],
