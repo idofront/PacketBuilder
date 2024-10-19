@@ -1,6 +1,7 @@
 #include <PluginInterface.hpp>
 #include <Poco/ClassLibrary.h>
 
+#include <MyJsonDumper.hpp>
 #include <MyJsonParser.hpp>
 #include <Utility.hpp>
 #include <iostream>
@@ -19,9 +20,12 @@ class MyPlugin : public PluginContract::PluginInterface
     void ExecuteImpl() override
     {
         auto container = this->Container();
+
         auto jsonParser = std::make_shared<MyJsonParser>();
         container->RegisterParser(jsonParser);
-        // auto msg = Utility::Demangle(typeid(*this).name());
+
+        auto jsonDumper = std::make_shared<MyJsonDumpler>();
+        container->RegisterDumper(jsonDumper);
     }
 };
 } // namespace MyPlugin
