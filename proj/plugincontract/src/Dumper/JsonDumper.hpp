@@ -1,7 +1,7 @@
 #ifndef PLUGINCONTRACT__DUMPER__JSONDUMPER_HPP
 #define PLUGINCONTRACT__DUMPER__JSONDUMPER_HPP
 
-#include <AbstractDumper.hpp>
+#include "AbstractDumper.hpp"
 
 namespace PluginContract
 {

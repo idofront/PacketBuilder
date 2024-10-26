@@ -4,6 +4,7 @@ project(plugincontract)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/src/Parser)
 include_directories(${PROJECT_SOURCE_DIR}/src/Dumper)
+include_directories(${PROJECT_SOURCE_DIR}/src/Packet)
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
