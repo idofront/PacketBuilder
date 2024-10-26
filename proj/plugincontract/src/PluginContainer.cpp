@@ -46,6 +46,7 @@ void PluginContainer::RegisterParser(ParserPtr parser, ParserCondition condition
         SPDLOG_WARN(boost::str(boost::format("Parser (%1%) already registered.") % type_name));
     }
     SPDLOG_INFO(boost::str(boost::format("Registered parser: %1%") % type_name));
-    _Parsers.push_back({parser, []() { return true; }});
+
+    _Parsers.push_back({parser, condition});
 }
 } // namespace PluginContract

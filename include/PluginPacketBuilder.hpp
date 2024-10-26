@@ -3,6 +3,7 @@
 
 #include <AbsoluteEntity.hpp>
 #include <EntityService.hpp>
+#include <Packet/Stackable.hpp>
 #include <PcapFileHeaderEntity.hpp>
 #include <PcapPacketHeaderEntity.hpp>
 #include <PluginContainer.hpp>
@@ -101,10 +102,33 @@ class PluginPacketBuilder
 
     PacketEntity::StackableEntityPtr ParsePcapData(const PacketEntity::StackableEntityPtr stackableEntityPtr)
     {
+        // TODO StackableEntity でなく Stackable を引数にする必要がる
+        auto stackable = (PluginContract::Packet::StackablePtr) nullptr;
+
         while (true)
         {
-            break;
+            auto parsers = _Container->FilterParsers(stackable);
+
+            if (parsers.size() == 0)
+            {
+                auto format = boost::format("No parser found");
+                auto message = format.str();
+                SPDLOG_INFO(message);
+                return stackableEntityPtr;
+            }
+
+            if (parsers.size() > 1)
+            {
+                auto format = boost::format("Multiple parsers found. Use the first one.");
+                auto message = format.str();
+                SPDLOG_INFO(message);
+            }
+
+            auto parser = parsers[0];
+
+            parser->Parse(stackable);
         }
+
         auto pcapPacketHeaderEntity = std::make_shared<PacketEntity::PcapPacketHeaderEntity>();
         auto binaryEntityPtr = std::make_shared<PacketEntity::BinaryEntity>(0);
         pcapPacketHeaderEntity->Stack.Value(binaryEntityPtr);

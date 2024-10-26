@@ -22,7 +22,11 @@ class MyPlugin : public PluginContract::PluginInterface
         auto container = this->Container();
 
         auto jsonParser = std::make_shared<MyJsonParser>();
-        container->RegisterParser(jsonParser, []() { return true; });
+
+        // TODO 要実装
+        auto dummyCondition = PluginContract::PluginContainer::ParserCondition(
+            [](PluginContract::Packet::StackablePtr stackable) { return true; });
+        container->RegisterParser(jsonParser, dummyCondition);
 
         auto jsonDumper = std::make_shared<MyJsonDumpler>();
         container->RegisterDumper(jsonDumper);
