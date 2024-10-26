@@ -8,8 +8,7 @@ namespace EthernetPlugin
 namespace Packet
 {
 Ethernet::Ethernet()
-    : PluginContract::Packet::Stackable(sizeof(ether_header)), DestinationAddress(""), SourceAddress(""), Type(0),
-      PayloadLength(0)
+    : PluginContract::Packet::Stackable(sizeof(ether_header)), DestinationAddress(""), SourceAddress(""), Type(0)
 {
     this->DestinationAddress.RegisterCallback(
         [this](std::string newValue, std::string oldValue) { this->OnDestinationAddressChanged(newValue, oldValue); });
@@ -19,9 +18,21 @@ Ethernet::Ethernet()
 
     this->Type.RegisterCallback(
         [this](uint16_t newValue, uint16_t oldValue) { this->OnTypeChanged(newValue, oldValue); });
+}
 
-    this->PayloadLength.RegisterCallback(
-        [this](uint16_t newValue, uint16_t oldValue) { this->OnPayloadLengthChanged(newValue, oldValue); });
+Ethernet::Ethernet(const ether_header *const header) : Ethernet()
+{
+    auto destinationAddress = std::string("");
+    Utility::EthernetAddressToString(destinationAddress, header->ether_dhost);
+
+    auto sourceAddress = std::string("");
+    Utility::EthernetAddressToString(sourceAddress, header->ether_shost);
+
+    auto type = ntohs(header->ether_type);
+
+    this->DestinationAddress.Value(destinationAddress);
+    this->SourceAddress.Value(sourceAddress);
+    this->Type.Value(type);
 }
 
 Ethernet::~Ethernet()
@@ -61,21 +72,10 @@ void Ethernet::OnTypeChanged(uint16_t newValue, uint16_t oldValue)
     }
 }
 
-void Ethernet::OnPayloadLengthChanged(uint16_t newValue, uint16_t oldValue)
-{
-    auto header = this->Header();
-    header->ether_type = htons(newValue);
-}
-
 void Ethernet::OnStacked(PluginContract::Packet::StackablePtr oldStackable,
                          PluginContract::Packet::StackablePtr newStackable)
 {
-    auto format = boost::format("Re-calculating payload length: %1% -> %2%");
-    auto msg = format % this->PayloadLength.Value() % this->GetTotalLength(newStackable);
-    SPDLOG_INFO(msg.str());
-
     PluginContract::Packet::Stackable::OnStacked(oldStackable, newStackable);
-    this->PayloadLength.Value(GetTotalLength(newStackable));
 }
 
 ether_header *Ethernet::Header()
