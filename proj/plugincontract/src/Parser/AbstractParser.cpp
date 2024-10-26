@@ -1,4 +1,5 @@
 #include <AbstractParser.hpp>
+#include <Packet/PacketUtility.hpp>
 #include <exception/InvalidOperationException.hpp>
 
 namespace PluginContract
@@ -38,7 +39,7 @@ const Packet::StackablePtr AbstractParser::HeadStackable()
 
 Packet::StackablePtr AbstractParser::TailStackable()
 {
-    return Packet::Stackable::Tail(this->Stackable());
+    return Packet::Tail(this->Stackable());
 }
 
 Packet::StackablePtr AbstractParser::Stackable()
