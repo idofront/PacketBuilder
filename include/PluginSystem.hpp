@@ -1,6 +1,7 @@
 #ifndef PLUGIN_SYSTEM_HPP__
 #define PLUGIN_SYSTEM_HPP__
 
+#include <Packet/Binary.hpp>
 #include <PluginInterface.hpp>
 #include <PluginPacketBuilder.hpp>
 #include <Poco/ClassLoader.h>
@@ -14,6 +15,7 @@
 #include <Poco/Util/OptionSet.h>
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 
 using Poco::Util::Application;
 using Poco::Util::HelpFormatter;
@@ -26,20 +28,40 @@ namespace PluginSystem
 typedef Poco::ClassLoader<PluginContract::PluginInterface> PluginLoader;
 typedef Poco::Manifest<PluginContract::PluginInterface> PluginManifest;
 
+/// @brief 動作確認用のダミー Stackable を生成する．
+/// @return Stackable
+/// @details 実装途中に動作確認するための Stackable であり，将来的に削除される．
+PluginContract::Packet::StackablePtr GenerateDummyStackable()
+{
+    auto ethernetRawData =
+        std::vector<uint8_t>{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x80, 0x00};
+    auto ipRawData = std::vector<uint8_t>{0x45, 0x00, 0x00, 0x3C, 0x00, 0x01, 0x00, 0x00, 0x40, 0x01,
+                                          0x00, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x0A, 0x00, 0x00, 0x02};
+
+    auto totalLength = ethernetRawData.size() + ipRawData.size();
+    auto binary = std::make_shared<PluginContract::Packet::Binary>(totalLength);
+
+    auto data = binary->DataArray().get();
+    std::copy(ethernetRawData.begin(), ethernetRawData.end(), data);
+    std::copy(ipRawData.begin(), ipRawData.end(), data + ethernetRawData.size());
+
+    return binary;
+}
+
 class PluginSystem : public Application
 {
   protected:
     void initialize(Application &self) override
     {
         Application::initialize(self);
-        logger().information("Initializing");
+        SPDLOG_INFO("Initializing");
 
         this->_Container = std::make_shared<PluginContract::PluginContainer>();
     }
 
     void uninitialize() override
     {
-        logger().information("Shutting down");
+        SPDLOG_INFO("Shutting down");
         Application::uninitialize();
     }
 
@@ -63,8 +85,20 @@ class PluginSystem : public Application
                 if (it->isFile() && (it.path().getExtension() == "so" || it.path().getExtension() == "dll"))
                 {
                     std::string pluginPath = it.path().toString();
-                    loader.loadLibrary(pluginPath);
-                    logger().information("Loaded plugin library: " + pluginPath);
+                    try
+                    {
+                        loader.loadLibrary(pluginPath);
+                    }
+                    catch (const std::exception &e)
+                    {
+                        auto fileName = it.path().getFileName();
+                        auto fmt = boost::format("Failed to load plugin library: %1% (%2%)");
+                        auto msg = fmt % fileName % e.what();
+                        SPDLOG_ERROR(msg.str());
+                        continue;
+                    }
+
+                    SPDLOG_INFO("Loaded plugin library: " + pluginPath);
 
                     // マニフェストからプラグインを取得
                     PluginLoader::Iterator loaderIt = loader.begin();
@@ -87,6 +121,11 @@ class PluginSystem : public Application
                     logger().information("Skipped: " + it.path().toString());
                 }
             }
+
+            // ダミー Stackable を生成
+            auto dummyStackable = GenerateDummyStackable();
+
+            // TODO ダミー Stackable を解析する
         }
         catch (Poco::Exception &ex)
         {
