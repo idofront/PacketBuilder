@@ -15,6 +15,7 @@
 #include <Poco/Util/OptionSet.h>
 #include <iostream>
 #include <memory>
+#include <spdlog/spdlog.h>
 
 using Poco::Util::Application;
 using Poco::Util::HelpFormatter;
@@ -53,14 +54,14 @@ class PluginSystem : public Application
     void initialize(Application &self) override
     {
         Application::initialize(self);
-        logger().information("Initializing");
+        SPDLOG_INFO("Initializing");
 
         this->_Container = std::make_shared<PluginContract::PluginContainer>();
     }
 
     void uninitialize() override
     {
-        logger().information("Shutting down");
+        SPDLOG_INFO("Shutting down");
         Application::uninitialize();
     }
 
