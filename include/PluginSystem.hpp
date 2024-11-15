@@ -63,8 +63,20 @@ class PluginSystem : public Application
                 if (it->isFile() && (it.path().getExtension() == "so" || it.path().getExtension() == "dll"))
                 {
                     std::string pluginPath = it.path().toString();
-                    loader.loadLibrary(pluginPath);
-                    logger().information("Loaded plugin library: " + pluginPath);
+                    try
+                    {
+                        loader.loadLibrary(pluginPath);
+                    }
+                    catch (const std::exception &e)
+                    {
+                        auto fileName = it.path().getFileName();
+                        auto fmt = boost::format("Failed to load plugin library: %1% (%2%)");
+                        auto msg = fmt % fileName % e.what();
+                        SPDLOG_ERROR(msg.str());
+                        continue;
+                    }
+
+                    SPDLOG_INFO("Loaded plugin library: " + pluginPath);
 
                     // マニフェストからプラグインを取得
                     PluginLoader::Iterator loaderIt = loader.begin();
