@@ -10,7 +10,6 @@ include_directories(${PROJECT_SOURCE_DIR}/../../plugin/plugincontract/src)
 include_directories(${PROJECT_SOURCE_DIR}/../../proj/utility/src)
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp")
-file(GLOB_RECURSE SRC_FILES "src/**/*.cpp")
 
 # ライブラリを生成
 add_library(EthernetPlugin SHARED ${SRC_FILES})

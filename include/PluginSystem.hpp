@@ -1,6 +1,7 @@
 #ifndef PLUGIN_SYSTEM_HPP__
 #define PLUGIN_SYSTEM_HPP__
 
+#include <Packet/Binary.hpp>
 #include <PluginInterface.hpp>
 #include <PluginPacketBuilder.hpp>
 #include <Poco/ClassLoader.h>
@@ -25,6 +26,26 @@ namespace PluginSystem
 {
 typedef Poco::ClassLoader<PluginContract::PluginInterface> PluginLoader;
 typedef Poco::Manifest<PluginContract::PluginInterface> PluginManifest;
+
+/// @brief 動作確認用のダミー Stackable を生成する．
+/// @return Stackable
+/// @details 実装途中に動作確認するための Stackable であり，将来的に削除される．
+PluginContract::Packet::StackablePtr GenerateDummyStackable()
+{
+    auto ethernetRawData =
+        std::vector<uint8_t>{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x80, 0x00};
+    auto ipRawData = std::vector<uint8_t>{0x45, 0x00, 0x00, 0x3C, 0x00, 0x01, 0x00, 0x00, 0x40, 0x01,
+                                          0x00, 0x00, 0x0A, 0x00, 0x00, 0x01, 0x0A, 0x00, 0x00, 0x02};
+
+    auto totalLength = ethernetRawData.size() + ipRawData.size();
+    auto binary = std::make_shared<PluginContract::Packet::Binary>(totalLength);
+
+    auto data = binary->DataArray().get();
+    std::copy(ethernetRawData.begin(), ethernetRawData.end(), data);
+    std::copy(ipRawData.begin(), ipRawData.end(), data + ethernetRawData.size());
+
+    return binary;
+}
 
 class PluginSystem : public Application
 {
@@ -99,6 +120,11 @@ class PluginSystem : public Application
                     logger().information("Skipped: " + it.path().toString());
                 }
             }
+
+            // ダミー Stackable を生成
+            auto dummyStackable = GenerateDummyStackable();
+
+            // TODO ダミー Stackable を解析する
         }
         catch (Poco::Exception &ex)
         {
