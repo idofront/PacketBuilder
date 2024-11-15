@@ -18,12 +18,6 @@ void PluginContainer::RegisterDumper(PluginContract::Dumper::DumperPtr dumper)
     const auto &type = typeid(dumperRef);
     auto type_name = Utility::Demangle(type.name());
 
-    auto dumperPtr = this->ResolveDumper<PluginContract::Dumper::AbstractDumper>();
-
-    if (dumperPtr != nullptr)
-    {
-        SPDLOG_WARN(boost::str(boost::format("Dumper (%1%) already registered.") % type_name));
-    }
     SPDLOG_INFO(boost::str(boost::format("Registered dumper: %1%") % type_name));
     _Dumpers.push_back(dumper);
 }
