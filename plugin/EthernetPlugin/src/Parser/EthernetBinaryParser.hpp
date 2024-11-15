@@ -38,7 +38,7 @@ class EthernetBinaryParser : public PluginContract::Parser::BinaryParser
         }
 
         auto header = reinterpret_cast<ether_header *>(binary->DataArray().get());
-        auto ethernet = std::make_shared<EthernetPlugin::Packet::Ethernet>(header);
+        auto ethernet = std::make_shared<Packet::Ethernet>(header);
 
         auto ethernetLength = ethernet->Length();
         auto newBinary = std::make_shared<PluginContract::Packet::Binary>(binary->DataArray().get() + ethernetLength,

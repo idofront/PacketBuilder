@@ -1,7 +1,7 @@
 #ifndef PLUGIN_CONTRACT__PARSER__BINARY_PARSER_HPP
 #define PLUGIN_CONTRACT__PARSER__BINARY_PARSER_HPP
 
-#include <AbstractParser.hpp>
+#include <Parser/AbstractParser.hpp>
 
 namespace PluginContract
 {
