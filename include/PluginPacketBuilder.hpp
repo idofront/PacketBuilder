@@ -28,6 +28,34 @@ class PluginPacketBuilder
         this->ParsePcap(path);
     }
 
+    PluginContract::Packet::StackablePtr ParseBinary(PluginContract::Packet::BinaryPtr binaryPtr)
+    {
+        auto stackable = (PluginContract::Packet::StackablePtr) nullptr;
+
+        auto parsers = _Container->FilterParsers(stackable);
+
+        if (parsers.size() == 0)
+        {
+            auto format = boost::format("No parser found");
+            auto message = format.str();
+            SPDLOG_INFO(message);
+            return stackable;
+        }
+
+        if (parsers.size() > 1)
+        {
+            auto format = boost::format("Multiple parsers found. Use the first one.");
+            auto message = format.str();
+            SPDLOG_INFO(message);
+        }
+
+        auto parser = parsers[0];
+
+        parser->Parse(stackable);
+
+        return stackable;
+    }
+
   private:
     using StackableEntityPtrs = std::vector<PacketEntity::StackableEntityPtr>;
     PluginContract::PluginContainerPtr _Container;
